@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRIKER - Steam Tower</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-overlay">
+            <div id="health-bar">
+                <div id="health-fill"></div>
+            </div>
+            <div id="height-indicator">
+                <span id="height-text">0m</span>
+            </div>
+        </div>
+        <div id="start-screen" class="screen">
+            <div class="title-container">
+                <h1 class="game-title">BRIKER</h1>
+                <h2 class="game-subtitle">STEAM TOWER</h2>
+                <div class="gear-divider">&#9881; &#9881; &#9881;</div>
+                <p class="instructions">Climb the tower. Reach the top.</p>
+                <p class="controls-info">
+                    <strong>WASD / Arrow Keys</strong> - Move<br>
+                    <strong>SPACE / W / UP</strong> - Jump<br>
+                    <strong>Wall Jump</strong> - Jump while sliding on walls
+                </p>
+                <button id="start-btn" class="steam-btn">ENGAGE ENGINES</button>
+            </div>
+        </div>
+        <div id="win-screen" class="screen hidden">
+            <div class="title-container">
+                <h1 class="game-title">TOWER CLEARED</h1>
+                <div class="gear-divider">&#9881; &#9881; &#9881;</div>
+                <p class="instructions" id="win-time">Time: 0:00</p>
+                <button id="restart-win-btn" class="steam-btn">ASCEND AGAIN</button>
+            </div>
+        </div>
+        <div id="death-screen" class="screen hidden">
+            <div class="title-container">
+                <h1 class="game-title" style="color:#cc3333;">GEARS JAMMED</h1>
+                <div class="gear-divider">&#9881; &#9881; &#9881;</div>
+                <p class="instructions">The machine claims another soul.</p>
+                <button id="restart-death-btn" class="steam-btn">RETRY</button>
+            </div>
+        </div>
+    </div>
+    <script src="js/game.js"></script>
+</body>
+</html>

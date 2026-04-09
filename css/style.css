@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0a0a12;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Press Start 2P', monospace;
+}
+
+#game-container {
+    position: relative;
+    width: 800px;
+    height: 600px;
+}
+
+#gameCanvas {
+    display: block;
+    width: 800px;
+    height: 600px;
+    border: 2px solid #b8860b;
+    box-shadow: 0 0 20px rgba(184, 134, 11, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.5);
+    image-rendering: pixelated;
+}
+
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 5;
+}
+
+#health-bar {
+    width: 150px;
+    height: 16px;
+    background: #1a1a2e;
+    border: 2px solid #b8860b;
+    box-shadow: 0 0 6px rgba(184, 134, 11, 0.4);
+}
+
+#health-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #cc3333, #ff6644);
+    transition: width 0.3s;
+}
+
+#height-indicator {
+    background: rgba(26, 26, 46, 0.8);
+    border: 2px solid #b8860b;
+    padding: 4px 10px;
+    color: #daa520;
+    font-size: 10px;
+}
+
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    background: rgba(10, 10, 18, 0.92);
+}
+
+.screen.hidden {
+    display: none;
+}
+
+.title-container {
+    text-align: center;
+}
+
+.game-title {
+    font-size: 42px;
+    color: #daa520;
+    text-shadow: 0 0 10px rgba(218, 165, 32, 0.5), 3px 3px 0 #8b6914;
+    letter-spacing: 6px;
+    margin-bottom: 8px;
+}
+
+.game-subtitle {
+    font-size: 18px;
+    color: #b87333;
+    letter-spacing: 8px;
+    margin-bottom: 20px;
+}
+
+.gear-divider {
+    font-size: 20px;
+    color: #708090;
+    margin: 16px 0;
+    letter-spacing: 12px;
+}
+
+.instructions {
+    font-size: 11px;
+    color: #a0a0b0;
+    margin-bottom: 16px;
+    line-height: 1.8;
+}
+
+.controls-info {
+    font-size: 9px;
+    color: #808090;
+    margin-bottom: 24px;
+    line-height: 2.2;
+}
+
+.steam-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: #1a1a2e;
+    background: linear-gradient(180deg, #daa520, #b8860b);
+    border: 2px solid #8b6914;
+    padding: 14px 32px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 0 #6b4e0a, 0 0 12px rgba(184, 134, 11, 0.3);
+}
+
+.steam-btn:hover {
+    background: linear-gradient(180deg, #ffd700, #daa520);
+    box-shadow: 0 4px 0 #8b6914, 0 0 20px rgba(218, 165, 32, 0.5);
+    transform: translateY(-1px);
+}
+
+.steam-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #6b4e0a;
+}
