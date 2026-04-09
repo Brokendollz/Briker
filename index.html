@@ -22,12 +22,19 @@
                 <h1 class="game-title">BRIKER</h1>
                 <h2 class="game-subtitle">STEAM TOWER</h2>
                 <div class="gear-divider">&#9881; &#9881; &#9881;</div>
-                <p class="instructions">Climb the tower. Reach the top.</p>
+                <p class="instructions">Climb to the top. Reach the goal.</p>
                 <p class="controls-info">
                     <strong>WASD / Arrow Keys</strong> - Move<br>
                     <strong>SPACE / W / UP</strong> - Jump<br>
                     <strong>Wall Jump</strong> - Jump while sliding on walls
                 </p>
+                <div class="stage-select">
+                    <p class="stage-label">SELECT STAGE</p>
+                    <div class="stage-buttons">
+                        <button id="stage-steampunk" class="steam-btn stage-btn active">STEAM TOWER</button>
+                        <button id="stage-icecave" class="steam-btn stage-btn">FROZEN DEPTHS</button>
+                    </div>
+                </div>
                 <button id="start-btn" class="steam-btn">ENGAGE ENGINES</button>
             </div>
         </div>
@@ -48,6 +55,9 @@
             </div>
         </div>
     </div>
-    <script src="js/game.js"></script>
+    <script src="js/design.js"></script>
+    <script src="js/stages.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
