@@ -147,3 +147,32 @@ body {
     transform: translateY(2px);
     box-shadow: 0 2px 0 #6b4e0a;
 }
+
+.stage-select {
+    margin-bottom: 20px;
+}
+
+.stage-label {
+    font-size: 10px;
+    color: #a0a0b0;
+    margin-bottom: 10px;
+    letter-spacing: 3px;
+}
+
+.stage-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.stage-btn {
+    font-size: 10px;
+    padding: 10px 16px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.stage-btn.active {
+    opacity: 1;
+    box-shadow: 0 4px 0 #6b4e0a, 0 0 15px rgba(184, 134, 11, 0.5);
+}
