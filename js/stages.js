@@ -73,16 +73,16 @@ function generateSteampunkLevel() {
     // PIT at x: 1750-1880 (130px gap - jumpable)
     // Floating blocks over/after the pit
     platforms.push({ x: 1900, y: B, w: 40, h: 14, type: 'pipe' });
-    platforms.push({ x: 1950, y: B, w: 40, h: 14, type: 'solid' });
+    platforms.push({ x: 1950, y: B, w: 40, h: 14, type: 'oneWay' });
     platforms.push({ x: 2000, y: B, w: 40, h: 14, type: 'pipe' });
     // Lower block row
     platforms.push({ x: 2060, y: B + 45, w: 40, h: 14, type: 'solid' });
-    platforms.push({ x: 2110, y: B + 45, w: 40, h: 14, type: 'pipe' });
+    platforms.push({ x: 2110, y: B + 45, w: 40, h: 14, type: 'oneWay' });
     platforms.push({ x: 2160, y: B + 45, w: 40, h: 14, type: 'solid' });
 
     // ===== SECTION 5: More ground + enemies zone (x: 2100-2800) =====
     // Floating blocks above ground
-    platforms.push({ x: 2250, y: B, w: 40, h: 14, type: 'solid' });
+    platforms.push({ x: 2250, y: B, w: 40, h: 14, type: 'oneWay' });
     platforms.push({ x: 2300, y: B, w: 40, h: 14, type: 'pipe' });
     platforms.push({ x: 2350, y: B, w: 40, h: 14, type: 'solid' });
     // Pipe obstacle
@@ -178,7 +178,8 @@ function generateIceCaveLevel() {
     while (py > GOAL_Y - 100) {
         const pw = 70 + Math.floor(rng() * 130);
         const px = 60 + Math.floor(rng() * (WORLD_WIDTH - pw - 120));
-        const type = rng() > 0.7 ? 'icebridge' : 'rock';
+        const typeRoll = rng();
+        const type = typeRoll > 0.75 ? 'icebridge' : (typeRoll > 0.5 ? 'oneWay' : 'rock');
         platforms.push({ x: px, y: py, w: pw, h: 18, type });
 
         if (rng() > 0.35) {
@@ -289,9 +290,9 @@ function generateDarkForestLevel() {
     // === ZONE 3: Multi-layer section (x: 1500-2800) ===
     // Three layers with clear stepping paths
     // Layer 1 (low)
-    platforms.push({ x: 1500, y: GROUND_Y - 75, w: 130, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 1500, y: GROUND_Y - 75, w: 130, h: 16, type: 'oneWay' });
     platforms.push({ x: 1720, y: GROUND_Y - 80, w: 160, h: 16, type: 'mossybrick' });
-    platforms.push({ x: 1960, y: GROUND_Y - 70, w: 120, h: 16, type: 'vineplat' });
+    platforms.push({ x: 1960, y: GROUND_Y - 70, w: 120, h: 16, type: 'oneWay' });
     platforms.push({ x: 2160, y: GROUND_Y - 80, w: 140, h: 16, type: 'mossybrick' });
     platforms.push({ x: 2400, y: GROUND_Y - 75, w: 110, h: 16, type: 'mossybrick' });
     platforms.push({ x: 2600, y: GROUND_Y - 80, w: 130, h: 16, type: 'vineplat' });
