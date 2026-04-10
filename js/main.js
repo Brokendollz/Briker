@@ -4,8 +4,23 @@
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-canvas.width = 800;
-canvas.height = 600;
+
+// Responsive canvas sizing
+function resizeCanvas() {
+    const isPortrait = window.innerHeight > window.innerWidth;
+    if (isPortrait && window.innerWidth < 850) {
+        // Mobile portrait: full width, aspect ratio 16:9
+        canvas.width = 400;
+        canvas.height = 600;
+    } else {
+        // Desktop: original resolution
+        canvas.width = 800;
+        canvas.height = 600;
+    }
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
 // ---- INPUT ----
 const keys = {};
