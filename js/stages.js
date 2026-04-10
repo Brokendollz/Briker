@@ -131,87 +131,128 @@ function generateIceCaveLevel() {
 }
 
 function generateDarkForestLevel() {
-    // Horizontal world - wide and short
+    // ============================================================
+    // Horizontal side-scrolling forest level
+    // Design rules based on player physics:
+    //   Max jump height = v^2/(2g) = 144/1.2 = 120px → safe max: 90px
+    //   Max jump distance ≈ 250px → safe max: 140px
+    //   Min platform width = player.w * 2 = 64px
+    // ============================================================
     WORLD_WIDTH = 4800;
-    WORLD_HEIGHT = 900;
-    GOAL_Y = 0; // not used for vertical goal in this stage
+    WORLD_HEIGHT = 700;
+    GOAL_Y = 0;
 
     platforms = [];
     icicles = [];
 
-    // Ground floor - full width
-    platforms.push({ x: 0, y: WORLD_HEIGHT - 40, w: WORLD_WIDTH, h: 40, type: 'solid' });
+    const GROUND_Y = WORLD_HEIGHT - 40;
+    const MAX_SAFE_VGAP = 85;   // vertical gap between platforms
+    const MAX_SAFE_HGAP = 130;  // horizontal gap between platforms
+    const MIN_PLAT_W = 70;      // minimum platform width
 
-    // Ceiling
-    platforms.push({ x: 0, y: -20, w: WORLD_WIDTH, h: 30, type: 'wall' });
+    // Ground floor
+    platforms.push({ x: 0, y: GROUND_Y, w: WORLD_WIDTH, h: 40, type: 'solid' });
 
-    // Left starting wall
+    // Side walls
     platforms.push({ x: -40, y: 0, w: 50, h: WORLD_HEIGHT, type: 'wall' });
-    // Right end wall
     platforms.push({ x: WORLD_WIDTH - 10, y: 0, w: 50, h: WORLD_HEIGHT, type: 'wall' });
 
     const rng = seedRandom(51);
 
-    // === Define platform layers (matching image structure) ===
-    // Layer heights from bottom to top
-    const layers = [
-        { y: WORLD_HEIGHT - 160, count: 8 },   // Layer 1 - just above ground
-        { y: WORLD_HEIGHT - 280, count: 7 },   // Layer 2
-        { y: WORLD_HEIGHT - 400, count: 6 },   // Layer 3
-        { y: WORLD_HEIGHT - 520, count: 7 },   // Layer 4
-        { y: WORLD_HEIGHT - 640, count: 5 },   // Layer 5 - near castle
-        { y: WORLD_HEIGHT - 750, count: 4 },   // Layer 6 - top
-    ];
+    // === ZONE 1: Safe start area (x: 0-600) ===
+    // Teach the player: flat ground with small jumps
+    platforms.push({ x: 120, y: GROUND_Y - 70, w: 140, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 310, y: GROUND_Y - 65, w: 120, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 470, y: GROUND_Y - 80, w: 100, h: 16, type: 'vineplat' });
 
-    for (const layer of layers) {
-        let px = 40 + Math.floor(rng() * 60);
-        for (let i = 0; i < layer.count; i++) {
-            const pw = 80 + Math.floor(rng() * 140);
-            const yOffset = Math.floor(rng() * 30) - 15; // slight y variation
-            const typeRoll = rng();
-            const type = typeRoll > 0.75 ? 'vineplat' : 'mossybrick';
+    // === ZONE 2: First platforms section (x: 600-1500) ===
+    // Two layers - ground path always available
+    // Layer 1 (low)
+    platforms.push({ x: 620, y: GROUND_Y - 75, w: 160, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 850, y: GROUND_Y - 80, w: 130, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 1050, y: GROUND_Y - 70, w: 150, h: 16, type: 'vineplat' });
+    platforms.push({ x: 1270, y: GROUND_Y - 80, w: 120, h: 16, type: 'mossybrick' });
+    // Layer 2 (mid) - reachable from layer 1 (85px up)
+    platforms.push({ x: 680, y: GROUND_Y - 160, w: 140, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 900, y: GROUND_Y - 155, w: 180, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 1150, y: GROUND_Y - 160, w: 130, h: 16, type: 'vineplat' });
+    platforms.push({ x: 1340, y: GROUND_Y - 155, w: 100, h: 16, type: 'mossybrick' });
 
-            platforms.push({ x: px, y: layer.y + yOffset, w: pw, h: 16, type });
+    // === ZONE 3: Multi-layer section (x: 1500-2800) ===
+    // Three layers with clear stepping paths
+    // Layer 1 (low)
+    platforms.push({ x: 1500, y: GROUND_Y - 75, w: 130, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 1720, y: GROUND_Y - 80, w: 160, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 1960, y: GROUND_Y - 70, w: 120, h: 16, type: 'vineplat' });
+    platforms.push({ x: 2160, y: GROUND_Y - 80, w: 140, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 2400, y: GROUND_Y - 75, w: 110, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 2600, y: GROUND_Y - 80, w: 130, h: 16, type: 'vineplat' });
+    // Layer 2 (mid)
+    platforms.push({ x: 1550, y: GROUND_Y - 160, w: 150, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 1780, y: GROUND_Y - 165, w: 180, h: 16, type: 'vineplat' });
+    platforms.push({ x: 2030, y: GROUND_Y - 155, w: 140, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 2250, y: GROUND_Y - 160, w: 160, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 2480, y: GROUND_Y - 165, w: 120, h: 16, type: 'vineplat' });
+    // Layer 3 (high)
+    platforms.push({ x: 1620, y: GROUND_Y - 245, w: 130, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 1850, y: GROUND_Y - 240, w: 160, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 2100, y: GROUND_Y - 245, w: 140, h: 16, type: 'vineplat' });
+    platforms.push({ x: 2340, y: GROUND_Y - 240, w: 120, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 2550, y: GROUND_Y - 250, w: 150, h: 16, type: 'mossybrick' });
 
-            // Connecting vertical step platforms between layers
-            if (rng() > 0.5) {
-                const stepX = px + Math.floor(rng() * pw);
-                const stepY = layer.y + yOffset - 50 - Math.floor(rng() * 40);
-                if (stepY > 60) {
-                    platforms.push({ x: stepX, y: stepY, w: 50 + Math.floor(rng() * 35), h: 14, type: 'mossybrick' });
-                }
-            }
+    // === ZONE 4: Challenge section (x: 2800-3800) ===
+    // Tighter gaps, more vertical movement
+    // Ground blocks to force upward
+    platforms.push({ x: 2850, y: GROUND_Y - 30, w: 80, h: 30, type: 'mossybrick' });
+    platforms.push({ x: 3200, y: GROUND_Y - 30, w: 80, h: 30, type: 'mossybrick' });
+    // Layer 1
+    platforms.push({ x: 2820, y: GROUND_Y - 80, w: 110, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 3000, y: GROUND_Y - 85, w: 130, h: 16, type: 'vineplat' });
+    platforms.push({ x: 3200, y: GROUND_Y - 75, w: 100, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 3380, y: GROUND_Y - 85, w: 120, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 3560, y: GROUND_Y - 80, w: 140, h: 16, type: 'vineplat' });
+    // Layer 2
+    platforms.push({ x: 2880, y: GROUND_Y - 165, w: 120, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 3080, y: GROUND_Y - 160, w: 150, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 3300, y: GROUND_Y - 170, w: 110, h: 16, type: 'vineplat' });
+    platforms.push({ x: 3480, y: GROUND_Y - 160, w: 130, h: 16, type: 'mossybrick' });
+    // Layer 3
+    platforms.push({ x: 2950, y: GROUND_Y - 250, w: 140, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 3150, y: GROUND_Y - 245, w: 120, h: 16, type: 'vineplat' });
+    platforms.push({ x: 3350, y: GROUND_Y - 250, w: 150, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 3550, y: GROUND_Y - 245, w: 110, h: 16, type: 'mossybrick' });
+    // Top path
+    platforms.push({ x: 3050, y: GROUND_Y - 330, w: 130, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 3250, y: GROUND_Y - 335, w: 160, h: 16, type: 'vineplat' });
+    platforms.push({ x: 3480, y: GROUND_Y - 330, w: 120, h: 16, type: 'mossybrick' });
 
-            // Gap between platforms in same layer
-            px += pw + 40 + Math.floor(rng() * 80);
+    // === ZONE 5: Castle approach (x: 3800-4800) ===
+    // Staircase ascent toward the castle
+    platforms.push({ x: 3800, y: GROUND_Y - 75, w: 140, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 3980, y: GROUND_Y - 85, w: 120, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 3900, y: GROUND_Y - 160, w: 130, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 4080, y: GROUND_Y - 155, w: 110, h: 16, type: 'vineplat' });
+    platforms.push({ x: 4000, y: GROUND_Y - 240, w: 140, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 4180, y: GROUND_Y - 235, w: 120, h: 16, type: 'mossybrick' });
+    // Final staircase to castle
+    platforms.push({ x: 4280, y: GROUND_Y - 310, w: 110, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 4400, y: GROUND_Y - 240, w: 100, h: 16, type: 'mossybrick' });
+    platforms.push({ x: 4480, y: GROUND_Y - 320, w: 100, h: 16, type: 'mossybrick' });
 
-            if (px > WORLD_WIDTH - 150) break;
+    // Castle / Goal platform
+    platforms.push({ x: 4550, y: GROUND_Y - 400, w: 160, h: 16, type: 'goal' });
+
+    // === Add procedural variety (small extra platforms) ===
+    for (let i = 0; i < 15; i++) {
+        const ex = 300 + Math.floor(rng() * (WORLD_WIDTH - 700));
+        const ey = GROUND_Y - 90 - Math.floor(rng() * 200);
+        const ew = MIN_PLAT_W + Math.floor(rng() * 60);
+        const type = rng() > 0.6 ? 'vineplat' : 'mossybrick';
+        // Only add if not overlapping goal area
+        if (ex < 4400 || ey > GROUND_Y - 350) {
+            platforms.push({ x: ex, y: ey, w: ew, h: 14, type });
         }
     }
-
-    // Add extra scattered platforms for more paths
-    for (let i = 0; i < 25; i++) {
-        const ex = 60 + Math.floor(rng() * (WORLD_WIDTH - 200));
-        const ey = 120 + Math.floor(rng() * (WORLD_HEIGHT - 260));
-        const ew = 50 + Math.floor(rng() * 80);
-        const type = rng() > 0.6 ? 'vineplat' : 'mossybrick';
-        platforms.push({ x: ex, y: ey, w: ew, h: 14, type });
-    }
-
-    // Small ground hills / elevated ground sections
-    const rngGround = seedRandom(82);
-    for (let gx = 200; gx < WORLD_WIDTH - 400; gx += 300 + Math.floor(rngGround() * 200)) {
-        const gw = 100 + Math.floor(rngGround() * 120);
-        const gh = 30 + Math.floor(rngGround() * 40);
-        platforms.push({ x: gx, y: WORLD_HEIGHT - 40 - gh, w: gw, h: gh, type: 'mossybrick' });
-    }
-
-    // Goal platform - castle at far right, elevated
-    platforms.push({ x: WORLD_WIDTH - 200, y: WORLD_HEIGHT - 300, w: 140, h: 16, type: 'goal' });
-
-    // Stepping platforms leading to the castle
-    platforms.push({ x: WORLD_WIDTH - 400, y: WORLD_HEIGHT - 180, w: 100, h: 16, type: 'mossybrick' });
-    platforms.push({ x: WORLD_WIDTH - 320, y: WORLD_HEIGHT - 240, w: 90, h: 16, type: 'mossybrick' });
 }
 
 let forestTrees = [];
