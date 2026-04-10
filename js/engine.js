@@ -249,9 +249,12 @@ function updateCamera() {
     camera.y += (targetY - camera.y) * 0.1;
     camera.x += (targetX - camera.x) * 0.1;
 
-    // Clamp camera to world bounds
-    camera.x = Math.max(0, Math.min(camera.x, WORLD_WIDTH - canvas.width));
-    camera.y = Math.max(0, Math.min(camera.y, WORLD_HEIGHT - canvas.height));
+    // Clamp camera to world bounds, but allow overscan if needed
+    const maxCameraX = Math.max(0, WORLD_WIDTH - canvas.width);
+    const maxCameraY = Math.max(0, WORLD_HEIGHT - canvas.height);
+
+    camera.x = Math.max(0, Math.min(camera.x, maxCameraX));
+    camera.y = Math.max(0, Math.min(camera.y, maxCameraY));
 
     if (screenShake > 0) {
         camera.x += (Math.random() - 0.5) * screenShake;
