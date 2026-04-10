@@ -86,7 +86,7 @@ function drawPlayer() {
     if (f === -1) {
         ctx.translate(x + 16, 0);
         ctx.scale(-1, 1);
-        ctx.translate(-16, 0);
+        ctx.translate(-(x + 16), 0);
     }
 
     // --- JUMPING POSE ---
