@@ -191,7 +191,7 @@ body {
     pointer-events: none;
 }
 
-.mobile-left {
+.mobile-right {
     display: flex;
     gap: 10px;
 }
