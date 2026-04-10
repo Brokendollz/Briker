@@ -243,7 +243,7 @@ function updateSnowflakes() {
 
 // ---- CAMERA ----
 function updateCamera() {
-    const targetY = player.y - canvas.height * 0.3;
+    const targetY = player.y - canvas.height * 0.6;
     camera.y += (targetY - camera.y) * 0.1;
     camera.x = 0;
 
