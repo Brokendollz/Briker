@@ -16,103 +16,138 @@ function generateLevel() {
 
 function generateSteampunkLevel() {
     // ============================================================
-    // Steampunk horizontal level - Factory/Engine theme
-    // Design rules:
-    //   Max jump height = 120px → safe max: 90px
-    //   Max jump distance ≈ 250px → safe max: 130px
-    // Slightly easier than Dark Forest - first level
+    // Steampunk level - Super Mario 1-1 structure
+    // Ground-based with pits, pipes, floating blocks, staircase
+    // Jump height=120px (safe 90px), jump distance≈250px (safe 130px)
     // ============================================================
-    WORLD_WIDTH = 4600;
+    WORLD_WIDTH = 5600;
     WORLD_HEIGHT = 650;
     GOAL_Y = 0;
 
     platforms = [];
 
-    const GROUND_Y = WORLD_HEIGHT - 40;
-    const MAX_SAFE_VGAP = 85;
-    const MAX_SAFE_HGAP = 130;
-
-    // Ground floor
-    platforms.push({ x: 0, y: GROUND_Y, w: WORLD_WIDTH, h: 40, type: 'solid' });
+    const G = WORLD_HEIGHT - 40; // ground Y
+    const B = G - 85;            // block row height (floating blocks)
 
     // Side walls
     platforms.push({ x: -40, y: 0, w: 50, h: WORLD_HEIGHT, type: 'wall' });
     platforms.push({ x: WORLD_WIDTH - 10, y: 0, w: 50, h: WORLD_HEIGHT, type: 'wall' });
 
-    const rng = seedRandom(42);
+    // ===== GROUND SECTIONS (with pits like Mario 1-1) =====
+    platforms.push({ x: 0,    y: G, w: 1750, h: 40, type: 'solid' });  // start → first pit
+    platforms.push({ x: 1880, y: G, w: 900,  h: 40, type: 'solid' });  // after first pit
+    platforms.push({ x: 2920, y: G, w: 560,  h: 40, type: 'solid' });  // after second pit
+    platforms.push({ x: 3620, y: G, w: 1980, h: 40, type: 'solid' });  // after third pit → end
 
-    // === ZONE 1: Tutorial (x: 0-500) ===
-    // Simple flat area with minimal jumps
-    platforms.push({ x: 100, y: GROUND_Y - 50, w: 180, h: 16, type: 'solid' });
-    platforms.push({ x: 340, y: GROUND_Y - 50, w: 150, h: 16, type: 'pipe' });
+    // ===== SECTION 1: Start area (x: 0-400) =====
+    // Flat ground, single floating block to teach jumping
+    platforms.push({ x: 260, y: B, w: 40, h: 14, type: 'pipe' });
 
-    // === ZONE 2: First pipes section (x: 500-1300) ===
-    // Introduce pipes - steampunk element
-    platforms.push({ x: 520, y: GROUND_Y - 60, w: 140, h: 16, type: 'pipe' });
-    platforms.push({ x: 730, y: GROUND_Y - 55, w: 160, h: 16, type: 'solid' });
-    platforms.push({ x: 960, y: GROUND_Y - 65, w: 130, h: 16, type: 'pipe' });
-    platforms.push({ x: 1160, y: GROUND_Y - 60, w: 150, h: 16, type: 'solid' });
-    // Low level platforms (alternative path)
-    platforms.push({ x: 550, y: GROUND_Y - 30, w: 100, h: 16, type: 'solid' });
-    platforms.push({ x: 800, y: GROUND_Y - 35, w: 110, h: 16, type: 'solid' });
-    platforms.push({ x: 1000, y: GROUND_Y - 30, w: 100, h: 16, type: 'solid' });
+    // ===== SECTION 2: First blocks (x: 400-800) =====
+    // Row of blocks above ground - brick/pipe/brick pattern
+    platforms.push({ x: 410, y: B, w: 40, h: 14, type: 'solid' });
+    platforms.push({ x: 460, y: B, w: 40, h: 14, type: 'pipe' });
+    platforms.push({ x: 510, y: B, w: 40, h: 14, type: 'solid' });
+    platforms.push({ x: 560, y: B, w: 40, h: 14, type: 'pipe' });
+    platforms.push({ x: 610, y: B, w: 40, h: 14, type: 'solid' });
+    // High bonus block
+    platforms.push({ x: 510, y: B - 80, w: 40, h: 14, type: 'pipe' });
 
-    // === ZONE 3: Two-level with steam vents (x: 1300-2300) ===
-    // Lower level
-    platforms.push({ x: 1320, y: GROUND_Y - 50, w: 130, h: 16, type: 'solid' });
-    platforms.push({ x: 1530, y: GROUND_Y - 55, w: 120, h: 16, type: 'pipe' });
-    platforms.push({ x: 1730, y: GROUND_Y - 50, w: 140, h: 16, type: 'solid' });
-    platforms.push({ x: 1950, y: GROUND_Y - 60, w: 150, h: 16, type: 'pipe' });
-    platforms.push({ x: 2200, y: GROUND_Y - 50, w: 120, h: 16, type: 'solid' });
-    // Upper level (85px up)
-    platforms.push({ x: 1380, y: GROUND_Y - 135, w: 130, h: 16, type: 'solid' });
-    platforms.push({ x: 1600, y: GROUND_Y - 140, w: 150, h: 16, type: 'pipe' });
-    platforms.push({ x: 1830, y: GROUND_Y - 135, w: 120, h: 16, type: 'solid' });
-    platforms.push({ x: 2050, y: GROUND_Y - 140, w: 160, h: 16, type: 'pipe' });
+    // ===== SECTION 3: Pipes / Steam chimneys (x: 900-1700) =====
+    // Increasing height - player jumps over them
+    // Small chimney (40px tall)
+    platforms.push({ x: 920,  y: G - 40, w: 50, h: 40, type: 'solid' });
+    // Medium chimney (60px)
+    platforms.push({ x: 1120, y: G - 60, w: 50, h: 60, type: 'solid' });
+    // Tall chimney (80px)
+    platforms.push({ x: 1320, y: G - 80, w: 50, h: 80, type: 'solid' });
+    // Another tall chimney
+    platforms.push({ x: 1520, y: G - 80, w: 50, h: 80, type: 'solid' });
 
-    // === ZONE 4: Complex section with bridges (x: 2300-3300) ===
-    // Lower path
-    platforms.push({ x: 2320, y: GROUND_Y - 55, w: 140, h: 16, type: 'solid' });
-    platforms.push({ x: 2530, y: GROUND_Y - 65, w: 130, h: 16, type: 'pipe' });
-    platforms.push({ x: 2740, y: GROUND_Y - 55, w: 150, h: 16, type: 'solid' });
-    platforms.push({ x: 2970, y: GROUND_Y - 60, w: 120, h: 16, type: 'pipe' });
-    platforms.push({ x: 3170, y: GROUND_Y - 55, w: 140, h: 16, type: 'solid' });
-    // Mid path (85px up)
-    platforms.push({ x: 2380, y: GROUND_Y - 140, w: 120, h: 16, type: 'pipe' });
-    platforms.push({ x: 2600, y: GROUND_Y - 145, w: 140, h: 16, type: 'solid' });
-    platforms.push({ x: 2820, y: GROUND_Y - 140, w: 130, h: 16, type: 'pipe' });
-    platforms.push({ x: 3040, y: GROUND_Y - 145, w: 150, h: 16, type: 'solid' });
-    // Top path (170px up) - challenge
-    platforms.push({ x: 2460, y: GROUND_Y - 225, w: 130, h: 16, type: 'solid' });
-    platforms.push({ x: 2700, y: GROUND_Y - 230, w: 140, h: 16, type: 'pipe' });
-    platforms.push({ x: 2920, y: GROUND_Y - 225, w: 120, h: 16, type: 'solid' });
-    platforms.push({ x: 3120, y: GROUND_Y - 230, w: 150, h: 16, type: 'pipe' });
+    // ===== SECTION 4: First pit + blocks (x: 1750-2100) =====
+    // PIT at x: 1750-1880 (130px gap - jumpable)
+    // Floating blocks over/after the pit
+    platforms.push({ x: 1900, y: B, w: 40, h: 14, type: 'pipe' });
+    platforms.push({ x: 1950, y: B, w: 40, h: 14, type: 'solid' });
+    platforms.push({ x: 2000, y: B, w: 40, h: 14, type: 'pipe' });
+    // Lower block row
+    platforms.push({ x: 2060, y: B + 45, w: 40, h: 14, type: 'solid' });
+    platforms.push({ x: 2110, y: B + 45, w: 40, h: 14, type: 'pipe' });
+    platforms.push({ x: 2160, y: B + 45, w: 40, h: 14, type: 'solid' });
 
-    // === ZONE 5: Approach to goal (x: 3300-4600) ===
-    // Staircase pattern ascending toward the engine
-    platforms.push({ x: 3320, y: GROUND_Y - 60, w: 140, h: 16, type: 'solid' });
-    platforms.push({ x: 3530, y: GROUND_Y - 70, w: 130, h: 16, type: 'pipe' });
-    platforms.push({ x: 3420, y: GROUND_Y - 140, w: 120, h: 16, type: 'solid' });
-    platforms.push({ x: 3630, y: GROUND_Y - 150, w: 140, h: 16, type: 'pipe' });
-    platforms.push({ x: 3540, y: GROUND_Y - 225, w: 130, h: 16, type: 'solid' });
-    platforms.push({ x: 3760, y: GROUND_Y - 235, w: 120, h: 16, type: 'pipe' });
-    // Final approach
-    platforms.push({ x: 3880, y: GROUND_Y - 300, w: 150, h: 16, type: 'solid' });
-    platforms.push({ x: 4080, y: GROUND_Y - 310, w: 140, h: 16, type: 'pipe' });
-    platforms.push({ x: 4260, y: GROUND_Y - 300, w: 130, h: 16, type: 'solid' });
+    // ===== SECTION 5: More ground + enemies zone (x: 2100-2800) =====
+    // Floating blocks above ground
+    platforms.push({ x: 2250, y: B, w: 40, h: 14, type: 'solid' });
+    platforms.push({ x: 2300, y: B, w: 40, h: 14, type: 'pipe' });
+    platforms.push({ x: 2350, y: B, w: 40, h: 14, type: 'solid' });
+    // Pipe obstacle
+    platforms.push({ x: 2500, y: G - 50, w: 50, h: 50, type: 'solid' });
+    // High platform path (optional challenge)
+    platforms.push({ x: 2200, y: B - 80, w: 120, h: 14, type: 'pipe' });
+    platforms.push({ x: 2400, y: B - 75, w: 100, h: 14, type: 'pipe' });
+    // More blocks
+    platforms.push({ x: 2600, y: B, w: 40, h: 14, type: 'solid' });
+    platforms.push({ x: 2650, y: B, w: 40, h: 14, type: 'pipe' });
+    platforms.push({ x: 2700, y: B, w: 40, h: 14, type: 'solid' });
 
-    // Goal - Big Steam Engine
-    platforms.push({ x: 4380, y: GROUND_Y - 380, w: 160, h: 20, type: 'goal' });
+    // ===== SECTION 6: Second pit + ceiling run (x: 2780-3200) =====
+    // PIT at x: 2780-2920 (140px gap)
+    // Ceiling of blocks to run under / jump onto
+    platforms.push({ x: 2920, y: B + 20, w: 200, h: 14, type: 'solid' });
+    platforms.push({ x: 3130, y: B + 20, w: 150, h: 14, type: 'solid' });
+    // Blocks above the ceiling
+    platforms.push({ x: 2950, y: B - 55, w: 100, h: 14, type: 'pipe' });
+    platforms.push({ x: 3100, y: B - 55, w: 80, h: 14, type: 'pipe' });
+    // Pipe on ground
+    platforms.push({ x: 3300, y: G - 60, w: 50, h: 60, type: 'solid' });
 
-    // === Add small pipe accents ===
-    for (let i = 0; i < 10; i++) {
-        const px = 200 + Math.floor(rng() * (WORLD_WIDTH - 600));
-        const py = GROUND_Y - 80 - Math.floor(rng() * 150);
-        const pw = 50 + Math.floor(rng() * 50);
-        if (px < 4300) {
-            platforms.push({ x: px, y: py, w: pw, h: 14, type: 'pipe' });
-        }
-    }
+    // ===== SECTION 7: Third pit (x: 3480-3620) =====
+    // PIT at x: 3480-3620 (140px gap)
+    // Blocks helping to cross
+    platforms.push({ x: 3500, y: B + 30, w: 60, h: 14, type: 'pipe' });
+
+    // ===== SECTION 8: Staircase (x: 3700-4600) =====
+    // Ascending staircase (like Mario's end-of-level stairs)
+    // Step 1: 1 block high
+    platforms.push({ x: 3750, y: G - 32, w: 40, h: 32, type: 'solid' });
+    // Step 2: 2 blocks
+    platforms.push({ x: 3790, y: G - 64, w: 40, h: 64, type: 'solid' });
+    // Step 3: 3 blocks
+    platforms.push({ x: 3830, y: G - 96, w: 40, h: 96, type: 'solid' });
+    // Step 4: 4 blocks (peak)
+    platforms.push({ x: 3870, y: G - 128, w: 40, h: 128, type: 'solid' });
+
+    // Gap after first staircase (80px)
+
+    // Second staircase (ascending + descending)
+    platforms.push({ x: 3990, y: G - 128, w: 40, h: 128, type: 'solid' });
+    platforms.push({ x: 4030, y: G - 128, w: 40, h: 128, type: 'solid' });
+    platforms.push({ x: 4070, y: G - 96,  w: 40, h: 96,  type: 'solid' });
+    platforms.push({ x: 4110, y: G - 64,  w: 40, h: 64,  type: 'solid' });
+    platforms.push({ x: 4150, y: G - 32,  w: 40, h: 32,  type: 'solid' });
+
+    // Wide gap (120px)
+
+    // Third staircase (final ascent)
+    platforms.push({ x: 4310, y: G - 32,  w: 40, h: 32, type: 'solid' });
+    platforms.push({ x: 4350, y: G - 64,  w: 40, h: 64, type: 'solid' });
+    platforms.push({ x: 4390, y: G - 96,  w: 40, h: 96, type: 'solid' });
+    platforms.push({ x: 4430, y: G - 128, w: 40, h: 128, type: 'solid' });
+    platforms.push({ x: 4470, y: G - 160, w: 40, h: 160, type: 'solid' });
+    platforms.push({ x: 4510, y: G - 192, w: 40, h: 192, type: 'solid' });
+    platforms.push({ x: 4550, y: G - 224, w: 40, h: 224, type: 'solid' });
+    platforms.push({ x: 4590, y: G - 256, w: 40, h: 256, type: 'solid' });
+
+    // ===== SECTION 9: Flagpole / Goal (x: 4650) =====
+    // Goal column
+    platforms.push({ x: 4680, y: G - 280, w: 20, h: 280, type: 'solid' });
+    // Goal platform on top
+    platforms.push({ x: 4650, y: G - 300, w: 80, h: 20, type: 'goal' });
+
+    // ===== SECTION 10: After-goal flat run to castle (x: 4750-5600) =====
+    // Flat ground continues to the end (already covered by ground section)
+    // Small decorative pipe
+    platforms.push({ x: 5200, y: G - 60, w: 50, h: 60, type: 'solid' });
 }
 
 function generateIceCaveLevel() {
