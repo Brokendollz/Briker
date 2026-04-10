@@ -46,7 +46,7 @@ function startGame() {
     }
 
     startTime = Date.now();
-    camera.y = player.y - canvas.height * 0.45;
+    camera.y = player.y - canvas.height * 0.3;
 }
 
 // ---- STAGE SELECTION ----
