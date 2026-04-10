@@ -15,6 +15,17 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => { keys[e.code] = false; });
 
+// ---- MOBILE TOUCH CONTROLS ----
+function bindMobileBtn(id, keyCode) {
+    const btn = document.getElementById(id);
+    btn.addEventListener('touchstart', e => { e.preventDefault(); keys[keyCode] = true; btn.classList.add('pressed'); });
+    btn.addEventListener('touchend', e => { e.preventDefault(); keys[keyCode] = false; btn.classList.remove('pressed'); });
+    btn.addEventListener('touchcancel', e => { keys[keyCode] = false; btn.classList.remove('pressed'); });
+}
+bindMobileBtn('btn-left', 'ArrowLeft');
+bindMobileBtn('btn-right', 'ArrowRight');
+bindMobileBtn('btn-jump', 'Space');
+
 // ---- SCREEN MANAGEMENT ----
 function showScreen(id) {
     ['start-screen', 'win-screen', 'death-screen'].forEach(s => {
