@@ -83,14 +83,14 @@ const player = {
             if (this.onGround) {
                 this.vy = JUMP_FORCE;
                 this.jumpTimer = 15;
-                const pColor = currentStage === 'icecave' ? ICE_COLORS.snowBright : COLORS.steam;
+                const pColor = currentStage === 'icecave' ? ICE_COLORS.snowBright : currentStage === 'darkforest' ? FOREST_COLORS.mossBright : COLORS.steam;
                 spawnParticles(this.x + this.w / 2, this.y + this.h, 5, pColor, 'jump');
             } else if (this.wallSliding) {
                 this.vy = WALL_JUMP_FORCE_Y;
                 this.vx = -this.wallDir * WALL_JUMP_FORCE_X;
                 this.jumpTimer = 15;
                 this.facing = -this.wallDir;
-                const pColor = currentStage === 'icecave' ? ICE_COLORS.snowBright : COLORS.steam;
+                const pColor = currentStage === 'icecave' ? ICE_COLORS.snowBright : currentStage === 'darkforest' ? FOREST_COLORS.mossBright : COLORS.steam;
                 spawnParticles(this.x + (this.wallDir === -1 ? 0 : this.w), this.y + this.h / 2, 5, pColor, 'walljump');
             }
         }
@@ -288,6 +288,7 @@ function gameLoop() {
         updateEnemies();
         updateParticles();
         if (currentStage === 'icecave') updateSnowflakes();
+        if (currentStage === 'darkforest') updateFireflies();
         updateCamera();
         checkGoal();
     }
@@ -298,6 +299,7 @@ function gameLoop() {
     drawPlayer();
     drawParticleScene();
     if (currentStage === 'icecave') drawSnowScene();
+    if (currentStage === 'darkforest') drawFireflyScene();
 
     if (state === GameState.PLAYING) drawHUDScene();
 
