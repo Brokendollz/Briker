@@ -26,7 +26,7 @@ let snowflakes = [];
 // ---- PLAYER ----
 const player = {
     x: 380, y: WORLD_HEIGHT - 100,
-    w: 24, h: 32,
+    w: 32, h: 44,
     vx: 0, vy: 0,
     hp: 3, maxHp: 3,
     onGround: false,

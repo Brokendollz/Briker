@@ -53,37 +53,124 @@ function getColors() {
     return currentStage === 'icecave' ? ICE_COLORS : COLORS;
 }
 
-// ---- PLAYER RENDERING ----
+// ---- PLAYER RENDERING (Rick Dangerous style explorer) ----
 function drawPlayer() {
     if (player.invincible > 0 && Math.floor(player.invincible / 4) % 2 === 0) return;
-    const sx = player.x - camera.x;
-    const sy = player.y - camera.y;
+    const x = player.x - camera.x;
+    const y = player.y - camera.y;
+    const f = player.facing;
 
-    ctx.fillStyle = COLORS.copper;
-    ctx.fillRect(sx + 4, sy + 8, 16, 18);
-    ctx.fillStyle = COLORS.gold;
-    ctx.fillRect(sx + 6, sy, 12, 10);
-    ctx.fillStyle = COLORS.teal;
-    ctx.fillRect(sx + (player.facing === 1 ? 12 : 6), sy + 3, 6, 4);
-    ctx.fillStyle = '#0ff';
-    ctx.fillRect(sx + (player.facing === 1 ? 13 : 7), sy + 4, 4, 2);
-    ctx.fillStyle = COLORS.darkSteel;
-    ctx.fillRect(sx + 5, sy - 6, 14, 7);
-    ctx.fillRect(sx + 7, sy - 12, 10, 7);
-    ctx.fillStyle = COLORS.brass;
-    ctx.fillRect(sx + 10, sy - 10, 4, 4);
+    // Rick Dangerous palette
+    const SKIN = '#e8b070';
+    const SKIN_SH = '#c08848';
+    const SKIN_HI = '#f0c888';
+    const HAT_M = '#8b5a2b';
+    const HAT_HI = '#a87040';
+    const HAT_DK = '#6a3818';
+    const HAT_BAND = '#5a3018';
+    const SHIRT_M = '#c8a868';
+    const SHIRT_SH = '#a88848';
+    const SHIRT_HI = '#d8b878';
+    const BELT_C = '#4a3018';
+    const BUCKLE_C = '#c8a020';
+    const PANTS_C = '#6a5040';
+    const BOOT_C = '#3a2518';
+    const BOOT_HI = '#5a3a28';
+    const HAIR_C = '#4a2a10';
+    const WHIP_C = '#5a3818';
+    const MOUTH_C = '#a06048';
 
-    const legOffset = player.onGround && Math.abs(player.vx) > 0.5
+    // --- Back arm (behind body) ---
+    ctx.fillStyle = SHIRT_SH;
+    ctx.fillRect(f === 1 ? x + 3 : x + 24, y + 25, 5, 4);
+    ctx.fillStyle = SKIN_SH;
+    ctx.fillRect(f === 1 ? x + 4 : x + 25, y + 29, 3, 3);
+
+    // --- Fedora hat ---
+    ctx.fillStyle = HAT_M;
+    ctx.fillRect(x + 8, y, 16, 3);
+    ctx.fillRect(x + 6, y + 3, 20, 4);
+    ctx.fillStyle = HAT_HI;
+    ctx.fillRect(x + 9, y + 1, 12, 2);
+    ctx.fillStyle = HAT_BAND;
+    ctx.fillRect(x + 6, y + 6, 20, 2);
+    ctx.fillStyle = HAT_M;
+    ctx.fillRect(x + 2, y + 8, 28, 3);
+    ctx.fillStyle = HAT_DK;
+    ctx.fillRect(x + 3, y + 10, 26, 1);
+
+    // --- Face ---
+    ctx.fillStyle = SKIN;
+    ctx.fillRect(x + 8, y + 11, 16, 11);
+    // Shadow under brim
+    ctx.fillStyle = SKIN_SH;
+    ctx.fillRect(x + 8, y + 11, 16, 2);
+    // Sideburn
+    ctx.fillStyle = HAIR_C;
+    ctx.fillRect(f === 1 ? x + 7 : x + 23, y + 11, 2, 5);
+
+    // Eyes
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(x + 10, y + 14, 4, 3);
+    ctx.fillRect(x + 18, y + 14, 4, 3);
+    ctx.fillStyle = '#1a1a2a';
+    const ps = f === 1 ? 2 : 0;
+    ctx.fillRect(x + 10 + ps, y + 15, 2, 2);
+    ctx.fillRect(x + 18 + ps, y + 15, 2, 2);
+
+    // Nose (protrudes toward facing)
+    ctx.fillStyle = SKIN_HI;
+    ctx.fillRect(f === 1 ? x + 22 : x + 7, y + 16, 3, 3);
+
+    // Mouth
+    ctx.fillStyle = MOUTH_C;
+    ctx.fillRect(x + 12, y + 20, 6, 1);
+
+    // --- Neck ---
+    ctx.fillStyle = SKIN;
+    ctx.fillRect(x + 12, y + 22, 8, 2);
+
+    // --- Torso / shirt ---
+    ctx.fillStyle = SHIRT_M;
+    ctx.fillRect(x + 5, y + 24, 22, 3);
+    ctx.fillRect(x + 7, y + 27, 18, 7);
+    ctx.fillStyle = SHIRT_HI;
+    ctx.fillRect(x + 13, y + 24, 6, 2);
+    ctx.fillStyle = SHIRT_SH;
+    ctx.fillRect(x + 15, y + 26, 2, 8);
+    ctx.fillRect(f === 1 ? x + 9 : x + 18, y + 28, 5, 4);
+    ctx.fillStyle = SHIRT_M;
+    ctx.fillRect(f === 1 ? x + 10 : x + 19, y + 28, 3, 1);
+
+    // --- Belt ---
+    ctx.fillStyle = BELT_C;
+    ctx.fillRect(x + 7, y + 34, 18, 2);
+    ctx.fillStyle = BUCKLE_C;
+    ctx.fillRect(x + 14, y + 34, 4, 2);
+
+    // --- Legs ---
+    const lo = player.onGround && Math.abs(player.vx) > 0.5
         ? Math.sin(player.animFrame * Math.PI / 2) * 3 : 0;
-    ctx.fillStyle = COLORS.rust;
-    ctx.fillRect(sx + 5, sy + 26, 5, 6 + legOffset);
-    ctx.fillRect(sx + 14, sy + 26, 5, 6 - legOffset);
+    ctx.fillStyle = PANTS_C;
+    ctx.fillRect(x + 8, y + 36, 7, 4 + lo);
+    ctx.fillRect(x + 17, y + 36, 7, 4 - lo);
 
-    ctx.fillStyle = COLORS.steel;
-    const armX = player.facing === 1 ? sx + 18 : sx - 2;
-    ctx.fillRect(armX, sy + 12, 6, 4);
-    ctx.fillStyle = COLORS.brass;
-    ctx.fillRect(armX + (player.facing === 1 ? 4 : -2), sy + 10, 4, 8);
+    // Boots
+    ctx.fillStyle = BOOT_C;
+    ctx.fillRect(x + 7, y + 40 + lo, 8, 4);
+    ctx.fillRect(x + 17, y + 40 - lo, 8, 4);
+    ctx.fillStyle = BOOT_HI;
+    ctx.fillRect(x + 7, y + 40 + lo, 8, 1);
+    ctx.fillRect(x + 17, y + 40 - lo, 8, 1);
+
+    // --- Front arm + whip ---
+    const ax = f === 1 ? x + 25 : x - 3;
+    ctx.fillStyle = SHIRT_M;
+    ctx.fillRect(ax, y + 25, 6, 5);
+    ctx.fillStyle = SKIN;
+    ctx.fillRect(ax + 1, y + 30, 4, 3);
+    ctx.fillStyle = WHIP_C;
+    ctx.fillRect(ax + 2, y + 30, 2, 7);
 }
 
 // ---- ENEMY RENDERING ----
