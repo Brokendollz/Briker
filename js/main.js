@@ -58,10 +58,10 @@ function hideAllScreens() {
 function startGame() {
     state = GameState.PLAYING;
     hideAllScreens();
-    player.reset();
     particles = [];
     screenShake = 0;
     generateLevel();
+    player.reset();
     generateEnemies();
 
     if (currentStage === 'icecave') {

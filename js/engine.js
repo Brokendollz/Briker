@@ -9,9 +9,9 @@ const JUMP_FORCE = -12;
 const WALL_JUMP_FORCE_X = 7;
 const WALL_JUMP_FORCE_Y = -10;
 const WALL_SLIDE_SPEED = 1.5;
-const WORLD_WIDTH = 800;
-const WORLD_HEIGHT = 6000;
-const GOAL_Y = 200;
+let WORLD_WIDTH = 800;
+let WORLD_HEIGHT = 6000;
+let GOAL_Y = 200;
 
 const GameState = { MENU: 0, PLAYING: 1, DEAD: 2, WIN: 3 };
 let state = GameState.MENU;
@@ -39,7 +39,11 @@ const player = {
     animTimer: 0,
 
     reset() {
-        this.x = 380; this.y = WORLD_HEIGHT - 100;
+        if (currentStage === 'darkforest') {
+            this.x = 80; this.y = WORLD_HEIGHT - 100;
+        } else {
+            this.x = 380; this.y = WORLD_HEIGHT - 100;
+        }
         this.vx = 0; this.vy = 0;
         this.hp = this.maxHp;
         this.onGround = false;

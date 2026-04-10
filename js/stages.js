@@ -15,6 +15,9 @@ function generateLevel() {
 }
 
 function generateSteampunkLevel() {
+    WORLD_WIDTH = 800;
+    WORLD_HEIGHT = 6000;
+    GOAL_Y = 200;
     platforms = [];
     platforms.push({ x: 0, y: WORLD_HEIGHT - 40, w: WORLD_WIDTH, h: 40, type: 'solid' });
 
@@ -45,6 +48,9 @@ function generateSteampunkLevel() {
 }
 
 function generateIceCaveLevel() {
+    WORLD_WIDTH = 800;
+    WORLD_HEIGHT = 6000;
+    GOAL_Y = 200;
     platforms = [];
     icicles = [];
 
@@ -125,52 +131,87 @@ function generateIceCaveLevel() {
 }
 
 function generateDarkForestLevel() {
+    // Horizontal world - wide and short
+    WORLD_WIDTH = 4800;
+    WORLD_HEIGHT = 900;
+    GOAL_Y = 0; // not used for vertical goal in this stage
+
     platforms = [];
     icicles = [];
 
-    // Floor
+    // Ground floor - full width
     platforms.push({ x: 0, y: WORLD_HEIGHT - 40, w: WORLD_WIDTH, h: 40, type: 'solid' });
 
-    // Forest walls - tree trunk walls with variable thickness
-    const rngWall = seedRandom(71);
-    for (let y = 0; y < WORLD_HEIGHT; y += 100) {
-        const leftW = 30 + Math.floor(rngWall() * 45);
-        const rightW = 30 + Math.floor(rngWall() * 45);
-        platforms.push({ x: -40, y: y, w: leftW + 40, h: 100, type: 'wall' });
-        platforms.push({ x: WORLD_WIDTH - rightW, y: y, w: rightW + 40, h: 100, type: 'wall' });
-    }
+    // Ceiling
+    platforms.push({ x: 0, y: -20, w: WORLD_WIDTH, h: 30, type: 'wall' });
 
-    // Main platforms - mossy bricks and vine platforms like in the image
-    let py = WORLD_HEIGHT - 160;
+    // Left starting wall
+    platforms.push({ x: -40, y: 0, w: 50, h: WORLD_HEIGHT, type: 'wall' });
+    // Right end wall
+    platforms.push({ x: WORLD_WIDTH - 10, y: 0, w: 50, h: WORLD_HEIGHT, type: 'wall' });
+
     const rng = seedRandom(51);
 
-    while (py > GOAL_Y - 100) {
-        const pw = 75 + Math.floor(rng() * 120);
-        const px = 50 + Math.floor(rng() * (WORLD_WIDTH - pw - 100));
-        const typeRoll = rng();
-        const type = typeRoll > 0.75 ? 'vineplat' : 'mossybrick';
-        platforms.push({ x: px, y: py, w: pw, h: 16, type });
+    // === Define platform layers (matching image structure) ===
+    // Layer heights from bottom to top
+    const layers = [
+        { y: WORLD_HEIGHT - 160, count: 8 },   // Layer 1 - just above ground
+        { y: WORLD_HEIGHT - 280, count: 7 },   // Layer 2
+        { y: WORLD_HEIGHT - 400, count: 6 },   // Layer 3
+        { y: WORLD_HEIGHT - 520, count: 7 },   // Layer 4
+        { y: WORLD_HEIGHT - 640, count: 5 },   // Layer 5 - near castle
+        { y: WORLD_HEIGHT - 750, count: 4 },   // Layer 6 - top
+    ];
 
-        // Side platforms (more frequent for interconnected look like the image)
-        if (rng() > 0.35) {
-            const sx = px + (rng() > 0.5 ? -70 - rng() * 35 : pw + 25 + rng() * 35);
-            if (sx > 30 && sx < WORLD_WIDTH - 70) {
-                const sw = 45 + Math.floor(rng() * 40);
-                platforms.push({ x: sx, y: py - 30 - rng() * 35, w: sw, h: 14, type: 'mossybrick' });
+    for (const layer of layers) {
+        let px = 40 + Math.floor(rng() * 60);
+        for (let i = 0; i < layer.count; i++) {
+            const pw = 80 + Math.floor(rng() * 140);
+            const yOffset = Math.floor(rng() * 30) - 15; // slight y variation
+            const typeRoll = rng();
+            const type = typeRoll > 0.75 ? 'vineplat' : 'mossybrick';
+
+            platforms.push({ x: px, y: layer.y + yOffset, w: pw, h: 16, type });
+
+            // Connecting vertical step platforms between layers
+            if (rng() > 0.5) {
+                const stepX = px + Math.floor(rng() * pw);
+                const stepY = layer.y + yOffset - 50 - Math.floor(rng() * 40);
+                if (stepY > 60) {
+                    platforms.push({ x: stepX, y: stepY, w: 50 + Math.floor(rng() * 35), h: 14, type: 'mossybrick' });
+                }
             }
-        }
 
-        // Extra connecting platforms for the multi-path layout shown in the image
-        if (rng() > 0.6) {
-            const cx = 40 + Math.floor(rng() * (WORLD_WIDTH - 140));
-            platforms.push({ x: cx, y: py - 15 - rng() * 25, w: 40 + Math.floor(rng() * 50), h: 12, type: 'vineplat' });
-        }
+            // Gap between platforms in same layer
+            px += pw + 40 + Math.floor(rng() * 80);
 
-        py -= 60 + Math.floor(rng() * 55);
+            if (px > WORLD_WIDTH - 150) break;
+        }
     }
 
-    // Goal platform (castle)
-    platforms.push({ x: WORLD_WIDTH / 2 - 60, y: GOAL_Y, w: 120, h: 16, type: 'goal' });
+    // Add extra scattered platforms for more paths
+    for (let i = 0; i < 25; i++) {
+        const ex = 60 + Math.floor(rng() * (WORLD_WIDTH - 200));
+        const ey = 120 + Math.floor(rng() * (WORLD_HEIGHT - 260));
+        const ew = 50 + Math.floor(rng() * 80);
+        const type = rng() > 0.6 ? 'vineplat' : 'mossybrick';
+        platforms.push({ x: ex, y: ey, w: ew, h: 14, type });
+    }
+
+    // Small ground hills / elevated ground sections
+    const rngGround = seedRandom(82);
+    for (let gx = 200; gx < WORLD_WIDTH - 400; gx += 300 + Math.floor(rngGround() * 200)) {
+        const gw = 100 + Math.floor(rngGround() * 120);
+        const gh = 30 + Math.floor(rngGround() * 40);
+        platforms.push({ x: gx, y: WORLD_HEIGHT - 40 - gh, w: gw, h: gh, type: 'mossybrick' });
+    }
+
+    // Goal platform - castle at far right, elevated
+    platforms.push({ x: WORLD_WIDTH - 200, y: WORLD_HEIGHT - 300, w: 140, h: 16, type: 'goal' });
+
+    // Stepping platforms leading to the castle
+    platforms.push({ x: WORLD_WIDTH - 400, y: WORLD_HEIGHT - 180, w: 100, h: 16, type: 'mossybrick' });
+    platforms.push({ x: WORLD_WIDTH - 320, y: WORLD_HEIGHT - 240, w: 90, h: 16, type: 'mossybrick' });
 }
 
 let forestTrees = [];
@@ -222,8 +263,14 @@ function generateEnemies() {
     const rng = seedRandom(99);
 
     for (const p of platforms) {
-        if (p.type === 'wall' || p.type === 'goal' || p.w >= WORLD_WIDTH) continue;
-        if (p.y < GOAL_Y + 100) continue;
+        if (p.type === 'wall' || p.type === 'goal') continue;
+        if (p.w >= WORLD_WIDTH || p.h > 30) continue;
+        if (currentStage === 'darkforest') {
+            // Skip platforms near spawn (left) and goal (right)
+            if (p.x < 150 || p.x > WORLD_WIDTH - 250) continue;
+        } else {
+            if (p.y < GOAL_Y + 100) continue;
+        }
         if (rng() > 0.35) continue;
 
         const etype = rng() > 0.5 ? 'walker' : 'drone';

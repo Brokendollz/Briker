@@ -1043,6 +1043,11 @@ function drawIcicles() {
 function drawHUDScene() {
     const healthPct = player.hp / player.maxHp;
     document.getElementById('health-fill').style.width = (healthPct * 100) + '%';
-    const heightM = Math.max(0, Math.floor((WORLD_HEIGHT - player.y - 60) / 10));
-    document.getElementById('height-text').textContent = heightM + 'm';
+    if (currentStage === 'darkforest') {
+        const distM = Math.max(0, Math.floor((player.x - 60) / 10));
+        document.getElementById('height-text').textContent = distM + 'm';
+    } else {
+        const heightM = Math.max(0, Math.floor((WORLD_HEIGHT - player.y - 60) / 10));
+        document.getElementById('height-text').textContent = heightM + 'm';
+    }
 }
