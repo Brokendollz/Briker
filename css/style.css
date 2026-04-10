@@ -176,3 +176,72 @@ body {
     opacity: 1;
     box-shadow: 0 4px 0 #6b4e0a, 0 0 15px rgba(184, 134, 11, 0.5);
 }
+
+/* ---- MOBILE CONTROLS ---- */
+#mobile-controls {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    padding: 0 20px;
+    justify-content: space-between;
+    align-items: flex-end;
+    z-index: 20;
+    pointer-events: none;
+}
+
+.mobile-left {
+    display: flex;
+    gap: 10px;
+}
+
+.mobile-btn {
+    pointer-events: auto;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid #b8860b;
+    background: rgba(26, 26, 46, 0.85);
+    color: #daa520;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+.mobile-btn:active, .mobile-btn.pressed {
+    background: rgba(184, 134, 11, 0.5);
+    box-shadow: 0 0 12px rgba(218, 165, 32, 0.5);
+}
+
+.mobile-jump {
+    width: 80px;
+    height: 80px;
+    font-size: 10px;
+}
+
+@media (pointer: coarse), (max-width: 850px) {
+    #mobile-controls {
+        display: flex;
+    }
+
+    #game-container {
+        width: 100vw;
+        height: auto;
+    }
+
+    #gameCanvas {
+        width: 100vw;
+        height: auto;
+        border: none;
+    }
+
+    .controls-info {
+        display: none;
+    }
+}
