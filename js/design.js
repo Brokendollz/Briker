@@ -650,6 +650,8 @@ function drawPlatformScene() {
             drawIceBridge(p, sx, sy);
         } else if (p.type === 'rock') {
             drawRockPlatform(p, sx, sy);
+        } else if (p.type === 'lava') {
+            drawLavaPlatform(p, sx, sy);
         } else if (p.type === 'mossybrick') {
             drawMossyBrickPlatform(p, sx, sy);
         } else if (p.type === 'vineplat') {
@@ -769,6 +771,42 @@ function drawRockPlatform(p, sx, sy) {
     ctx.fillRect(sx, sy - 2, p.w, 3);
     ctx.fillRect(sx - 3, sy - 2, 5, 7);
     ctx.fillRect(sx + p.w - 2, sy - 2, 5, 7);
+}
+
+function drawLavaPlatform(p, sx, sy) {
+    // Dark hot base
+    ctx.fillStyle = '#331100';
+    ctx.fillRect(sx, sy, p.w, p.h);
+    // Lava glow body
+    ctx.fillStyle = '#cc2200';
+    ctx.fillRect(sx + 1, sy + 2, p.w - 2, p.h - 2);
+    ctx.fillStyle = '#ee4400';
+    ctx.fillRect(sx + 2, sy + 3, p.w - 4, p.h - 5);
+    // Animated bright streaks
+    const t = Date.now() * 0.004;
+    for (let fx = 4; fx < p.w - 4; fx += 10) {
+        const flicker = Math.sin(t + fx * 0.5) * 0.5 + 0.5;
+        const fh = 3 + flicker * 5;
+        ctx.fillStyle = flicker > 0.5 ? '#ffaa00' : '#ff6600';
+        ctx.fillRect(sx + fx, sy + 1, 4, fh);
+    }
+    // Top bright edge
+    ctx.fillStyle = '#ffcc00';
+    ctx.fillRect(sx, sy, p.w, 2);
+    // Animated flame tips above
+    for (let fx = 2; fx < p.w - 2; fx += 8) {
+        const fh = 3 + Math.sin(t * 1.5 + fx * 0.7) * 4;
+        const alpha = 0.4 + Math.sin(t * 2 + fx) * 0.3;
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#ff6600';
+        ctx.fillRect(sx + fx, sy - fh, 5, fh);
+        ctx.fillStyle = '#ffcc00';
+        ctx.fillRect(sx + fx + 1, sy - fh + 1, 3, fh * 0.5);
+    }
+    ctx.globalAlpha = 1;
+    // Bottom glow
+    ctx.fillStyle = 'rgba(255, 68, 0, 0.15)';
+    ctx.fillRect(sx - 4, sy + p.h, p.w + 8, 8);
 }
 
 function drawSteampunkSolid(p, sx, sy) {

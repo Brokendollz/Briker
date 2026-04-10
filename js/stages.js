@@ -64,6 +64,11 @@ function generateSteampunkLevel() {
     // Another tall chimney
     platforms.push({ x: 1520, y: G - 80, w: 50, h: 80, type: 'solid' });
 
+    // ===== LAVA PITS at bottom of gaps =====
+    platforms.push({ x: 1750, y: G + 10, w: 130, h: 30, type: 'lava' });
+    platforms.push({ x: 2780, y: G + 10, w: 140, h: 30, type: 'lava' });
+    platforms.push({ x: 3480, y: G + 10, w: 140, h: 30, type: 'lava' });
+
     // ===== SECTION 4: First pit + blocks (x: 1750-2100) =====
     // PIT at x: 1750-1880 (130px gap - jumpable)
     // Floating blocks over/after the pit
@@ -305,9 +310,10 @@ function generateDarkForestLevel() {
 
     // === ZONE 4: Challenge section (x: 2800-3800) ===
     // Tighter gaps, more vertical movement
-    // Ground blocks to force upward
-    platforms.push({ x: 2850, y: GROUND_Y - 30, w: 80, h: 30, type: 'mossybrick' });
-    platforms.push({ x: 3200, y: GROUND_Y - 30, w: 80, h: 30, type: 'mossybrick' });
+    // Lava hazards on the ground - forces player to use platforms!
+    platforms.push({ x: 2850, y: GROUND_Y - 10, w: 180, h: 14, type: 'lava' });
+    platforms.push({ x: 3200, y: GROUND_Y - 10, w: 200, h: 14, type: 'lava' });
+    platforms.push({ x: 3550, y: GROUND_Y - 10, w: 150, h: 14, type: 'lava' });
     // Layer 1
     platforms.push({ x: 2820, y: GROUND_Y - 80, w: 110, h: 16, type: 'mossybrick' });
     platforms.push({ x: 3000, y: GROUND_Y - 85, w: 130, h: 16, type: 'vineplat' });
@@ -407,7 +413,7 @@ function generateEnemies() {
     const rng = seedRandom(99);
 
     for (const p of platforms) {
-        if (p.type === 'wall' || p.type === 'goal') continue;
+        if (p.type === 'wall' || p.type === 'goal' || p.type === 'lava') continue;
         if (p.w >= WORLD_WIDTH || p.h > 30) continue;
         if (currentStage === 'darkforest' || currentStage === 'steampunk') {
             // Skip platforms near spawn (left) and goal (right) for horizontal stages
