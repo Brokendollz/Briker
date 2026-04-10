@@ -117,6 +117,13 @@ const player = {
         this.onGround = false;
         for (const p of platforms) {
             if (this.collides(p)) {
+                if (p.type === 'lava') {
+                    spawnParticles(this.x + this.w / 2, this.y + this.h, 20, '#ff4400', 'burst');
+                    spawnParticles(this.x + this.w / 2, this.y + this.h, 10, '#ffcc00', 'burst');
+                    this.invincible = 0;
+                    this.takeDamage(this.hp);
+                    return;
+                }
                 if (this.vy > 0) {
                     this.y = p.y - this.h;
                     this.onGround = true;
