@@ -656,6 +656,8 @@ function drawPlatformScene() {
             drawMossyBrickPlatform(p, sx, sy);
         } else if (p.type === 'vineplat') {
             drawVinePlatform(p, sx, sy);
+        } else if (p.type === 'oneWay') {
+            drawOneWayPlatform(p, sx, sy);
         } else {
             if (currentStage === 'icecave') drawIceSolidPlatform(p, sx, sy);
             else if (currentStage === 'darkforest') drawForestSolidPlatform(p, sx, sy);
@@ -973,6 +975,27 @@ function drawVinePlatform(p, sx, sy) {
     for (let vx = 10; vx < p.w - 8; vx += 20) {
         const vh = 8 + ((vx * 5 + 3) % 12);
         ctx.fillRect(sx + vx, sy + p.h, 2, vh);
+    }
+}
+
+function drawOneWayPlatform(p, sx, sy) {
+    // One-way platform (pass through from below)
+    ctx.fillStyle = COLORS.copper;
+    ctx.fillRect(sx, sy, p.w, p.h);
+    // Top highlight
+    ctx.fillStyle = COLORS.gold;
+    ctx.fillRect(sx, sy, p.w, 3);
+    // Directional arrows to indicate one-way nature
+    ctx.fillStyle = COLORS.brass;
+    const arrowSpacing = 20;
+    for (let ax = sx + 10; ax < sx + p.w; ax += arrowSpacing) {
+        // Arrow pointing up
+        ctx.beginPath();
+        ctx.moveTo(ax, sy + p.h - 2);
+        ctx.lineTo(ax - 4, sy + p.h - 6);
+        ctx.lineTo(ax + 4, sy + p.h - 6);
+        ctx.closePath();
+        ctx.fill();
     }
 }
 

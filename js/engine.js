@@ -124,13 +124,24 @@ const player = {
                     this.takeDamage(this.hp);
                     return;
                 }
-                if (this.vy > 0) {
-                    this.y = p.y - this.h;
-                    this.onGround = true;
-                } else if (this.vy < 0) {
-                    this.y = p.y + p.h;
+                // One-way platforms only collide when coming from below
+                if (p.type === 'oneWay') {
+                    if (this.vy > 0) {
+                        this.y = p.y - this.h;
+                        this.onGround = true;
+                        this.vy = 0;
+                    }
+                    // Can pass through from above or sides
+                } else {
+                    // Normal collision
+                    if (this.vy > 0) {
+                        this.y = p.y - this.h;
+                        this.onGround = true;
+                    } else if (this.vy < 0) {
+                        this.y = p.y + p.h;
+                    }
+                    this.vy = 0;
                 }
-                this.vy = 0;
             }
         }
 

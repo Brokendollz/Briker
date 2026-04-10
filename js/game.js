@@ -154,13 +154,24 @@ const player = {
         this.onGround = false;
         for (const p of platforms) {
             if (this.collides(p)) {
-                if (this.vy > 0) {
-                    this.y = p.y - this.h;
-                    this.onGround = true;
-                } else if (this.vy < 0) {
-                    this.y = p.y + p.h;
+                // One-way platforms only collide when coming from below
+                if (p.type === 'oneWay') {
+                    if (this.vy > 0) {
+                        this.y = p.y - this.h;
+                        this.onGround = true;
+                        this.vy = 0;
+                    }
+                    // Can pass through from above or sides
+                } else {
+                    // Normal collision
+                    if (this.vy > 0) {
+                        this.y = p.y - this.h;
+                        this.onGround = true;
+                    } else if (this.vy < 0) {
+                        this.y = p.y + p.h;
+                    }
+                    this.vy = 0;
                 }
-                this.vy = 0;
             }
         }
 
@@ -261,7 +272,8 @@ function generateLevel() {
     while (py > GOAL_Y - 100) {
         const pw = 80 + Math.floor(rng() * 100);
         const px = 40 + Math.floor(rng() * (WORLD_WIDTH - pw - 80));
-        const type = rng() > 0.7 ? 'pipe' : 'solid';
+        const typeRoll = rng();
+        const type = typeRoll > 0.75 ? 'pipe' : (typeRoll > 0.55 ? 'oneWay' : 'solid');
 
         platforms.push({ x: px, y: py, w: pw, h: 16, type });
 
@@ -548,19 +560,24 @@ function drawPlatforms() {
             ctx.fillStyle = COLORS.gold;
             ctx.fillRect(sx + p.w / 2 - 6, sy - 30 + bobY, 12, 12);
             ctx.fillRect(sx + p.w / 2 - 3, sy - 36 + bobY, 6, 6);
-        } else if (p.type === 'pipe') {
-            // Pipe platform (teal/green)
-            ctx.fillStyle = COLORS.darkTeal;
+        } else if (p.type === 'oneWay') {
+            // One-way platform (pass through from below)
+            ctx.fillStyle = COLORS.copper;
             ctx.fillRect(sx, sy, p.w, p.h);
-            ctx.fillStyle = COLORS.teal;
-            ctx.fillRect(sx, sy, p.w, 4);
-            // Pipe caps
+            // Top highlight
+            ctx.fillStyle = COLORS.gold;
+            ctx.fillRect(sx, sy, p.w, 3);
+            // Directional arrows to indicate one-way nature
             ctx.fillStyle = COLORS.brass;
-            ctx.fillRect(sx - 2, sy - 2, 8, p.h + 4);
-            ctx.fillRect(sx + p.w - 6, sy - 2, 8, p.h + 4);
-            // Steam vent (occasionally emit particles)
-            if (Math.random() < 0.02) {
-                spawnParticles(sx + camera.x + p.w / 2, p.y - 2, 2, COLORS.steam, 'steam');
+            const arrowSpacing = 20;
+            for (let ax = sx + 10; ax < sx + p.w; ax += arrowSpacing) {
+                // Arrow pointing up
+                ctx.beginPath();
+                ctx.moveTo(ax, sy + p.h - 2);
+                ctx.lineTo(ax - 4, sy + p.h - 6);
+                ctx.lineTo(ax + 4, sy + p.h - 6);
+                ctx.closePath();
+                ctx.fill();
             }
         } else {
             // Standard solid platform
