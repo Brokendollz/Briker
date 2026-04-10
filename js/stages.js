@@ -15,36 +15,104 @@ function generateLevel() {
 }
 
 function generateSteampunkLevel() {
-    WORLD_WIDTH = 800;
-    WORLD_HEIGHT = 6000;
-    GOAL_Y = 200;
+    // ============================================================
+    // Steampunk horizontal level - Factory/Engine theme
+    // Design rules:
+    //   Max jump height = 120px → safe max: 90px
+    //   Max jump distance ≈ 250px → safe max: 130px
+    // Slightly easier than Dark Forest - first level
+    // ============================================================
+    WORLD_WIDTH = 4600;
+    WORLD_HEIGHT = 650;
+    GOAL_Y = 0;
+
     platforms = [];
-    platforms.push({ x: 0, y: WORLD_HEIGHT - 40, w: WORLD_WIDTH, h: 40, type: 'solid' });
 
-    for (let y = 0; y < WORLD_HEIGHT; y += 200) {
-        platforms.push({ x: -40, y: y, w: 50, h: 200, type: 'wall' });
-        platforms.push({ x: WORLD_WIDTH - 10, y: y, w: 50, h: 200, type: 'wall' });
-    }
+    const GROUND_Y = WORLD_HEIGHT - 40;
+    const MAX_SAFE_VGAP = 85;
+    const MAX_SAFE_HGAP = 130;
 
-    let py = WORLD_HEIGHT - 160;
+    // Ground floor
+    platforms.push({ x: 0, y: GROUND_Y, w: WORLD_WIDTH, h: 40, type: 'solid' });
+
+    // Side walls
+    platforms.push({ x: -40, y: 0, w: 50, h: WORLD_HEIGHT, type: 'wall' });
+    platforms.push({ x: WORLD_WIDTH - 10, y: 0, w: 50, h: WORLD_HEIGHT, type: 'wall' });
+
     const rng = seedRandom(42);
 
-    while (py > GOAL_Y - 100) {
-        const pw = 80 + Math.floor(rng() * 100);
-        const px = 40 + Math.floor(rng() * (WORLD_WIDTH - pw - 80));
-        const type = rng() > 0.7 ? 'pipe' : 'solid';
-        platforms.push({ x: px, y: py, w: pw, h: 16, type });
+    // === ZONE 1: Tutorial (x: 0-500) ===
+    // Simple flat area with minimal jumps
+    platforms.push({ x: 100, y: GROUND_Y - 50, w: 180, h: 16, type: 'solid' });
+    platforms.push({ x: 340, y: GROUND_Y - 50, w: 150, h: 16, type: 'pipe' });
 
-        if (rng() > 0.5) {
-            const sx = px + (rng() > 0.5 ? -60 - rng() * 40 : pw + 20 + rng() * 40);
-            if (sx > 20 && sx < WORLD_WIDTH - 60) {
-                platforms.push({ x: sx, y: py - 40 - rng() * 30, w: 50, h: 12, type: 'solid' });
-            }
+    // === ZONE 2: First pipes section (x: 500-1300) ===
+    // Introduce pipes - steampunk element
+    platforms.push({ x: 520, y: GROUND_Y - 60, w: 140, h: 16, type: 'pipe' });
+    platforms.push({ x: 730, y: GROUND_Y - 55, w: 160, h: 16, type: 'solid' });
+    platforms.push({ x: 960, y: GROUND_Y - 65, w: 130, h: 16, type: 'pipe' });
+    platforms.push({ x: 1160, y: GROUND_Y - 60, w: 150, h: 16, type: 'solid' });
+    // Low level platforms (alternative path)
+    platforms.push({ x: 550, y: GROUND_Y - 30, w: 100, h: 16, type: 'solid' });
+    platforms.push({ x: 800, y: GROUND_Y - 35, w: 110, h: 16, type: 'solid' });
+    platforms.push({ x: 1000, y: GROUND_Y - 30, w: 100, h: 16, type: 'solid' });
+
+    // === ZONE 3: Two-level with steam vents (x: 1300-2300) ===
+    // Lower level
+    platforms.push({ x: 1320, y: GROUND_Y - 50, w: 130, h: 16, type: 'solid' });
+    platforms.push({ x: 1530, y: GROUND_Y - 55, w: 120, h: 16, type: 'pipe' });
+    platforms.push({ x: 1730, y: GROUND_Y - 50, w: 140, h: 16, type: 'solid' });
+    platforms.push({ x: 1950, y: GROUND_Y - 60, w: 150, h: 16, type: 'pipe' });
+    platforms.push({ x: 2200, y: GROUND_Y - 50, w: 120, h: 16, type: 'solid' });
+    // Upper level (85px up)
+    platforms.push({ x: 1380, y: GROUND_Y - 135, w: 130, h: 16, type: 'solid' });
+    platforms.push({ x: 1600, y: GROUND_Y - 140, w: 150, h: 16, type: 'pipe' });
+    platforms.push({ x: 1830, y: GROUND_Y - 135, w: 120, h: 16, type: 'solid' });
+    platforms.push({ x: 2050, y: GROUND_Y - 140, w: 160, h: 16, type: 'pipe' });
+
+    // === ZONE 4: Complex section with bridges (x: 2300-3300) ===
+    // Lower path
+    platforms.push({ x: 2320, y: GROUND_Y - 55, w: 140, h: 16, type: 'solid' });
+    platforms.push({ x: 2530, y: GROUND_Y - 65, w: 130, h: 16, type: 'pipe' });
+    platforms.push({ x: 2740, y: GROUND_Y - 55, w: 150, h: 16, type: 'solid' });
+    platforms.push({ x: 2970, y: GROUND_Y - 60, w: 120, h: 16, type: 'pipe' });
+    platforms.push({ x: 3170, y: GROUND_Y - 55, w: 140, h: 16, type: 'solid' });
+    // Mid path (85px up)
+    platforms.push({ x: 2380, y: GROUND_Y - 140, w: 120, h: 16, type: 'pipe' });
+    platforms.push({ x: 2600, y: GROUND_Y - 145, w: 140, h: 16, type: 'solid' });
+    platforms.push({ x: 2820, y: GROUND_Y - 140, w: 130, h: 16, type: 'pipe' });
+    platforms.push({ x: 3040, y: GROUND_Y - 145, w: 150, h: 16, type: 'solid' });
+    // Top path (170px up) - challenge
+    platforms.push({ x: 2460, y: GROUND_Y - 225, w: 130, h: 16, type: 'solid' });
+    platforms.push({ x: 2700, y: GROUND_Y - 230, w: 140, h: 16, type: 'pipe' });
+    platforms.push({ x: 2920, y: GROUND_Y - 225, w: 120, h: 16, type: 'solid' });
+    platforms.push({ x: 3120, y: GROUND_Y - 230, w: 150, h: 16, type: 'pipe' });
+
+    // === ZONE 5: Approach to goal (x: 3300-4600) ===
+    // Staircase pattern ascending toward the engine
+    platforms.push({ x: 3320, y: GROUND_Y - 60, w: 140, h: 16, type: 'solid' });
+    platforms.push({ x: 3530, y: GROUND_Y - 70, w: 130, h: 16, type: 'pipe' });
+    platforms.push({ x: 3420, y: GROUND_Y - 140, w: 120, h: 16, type: 'solid' });
+    platforms.push({ x: 3630, y: GROUND_Y - 150, w: 140, h: 16, type: 'pipe' });
+    platforms.push({ x: 3540, y: GROUND_Y - 225, w: 130, h: 16, type: 'solid' });
+    platforms.push({ x: 3760, y: GROUND_Y - 235, w: 120, h: 16, type: 'pipe' });
+    // Final approach
+    platforms.push({ x: 3880, y: GROUND_Y - 300, w: 150, h: 16, type: 'solid' });
+    platforms.push({ x: 4080, y: GROUND_Y - 310, w: 140, h: 16, type: 'pipe' });
+    platforms.push({ x: 4260, y: GROUND_Y - 300, w: 130, h: 16, type: 'solid' });
+
+    // Goal - Big Steam Engine
+    platforms.push({ x: 4380, y: GROUND_Y - 380, w: 160, h: 20, type: 'goal' });
+
+    // === Add small pipe accents ===
+    for (let i = 0; i < 10; i++) {
+        const px = 200 + Math.floor(rng() * (WORLD_WIDTH - 600));
+        const py = GROUND_Y - 80 - Math.floor(rng() * 150);
+        const pw = 50 + Math.floor(rng() * 50);
+        if (px < 4300) {
+            platforms.push({ x: px, y: py, w: pw, h: 14, type: 'pipe' });
         }
-        py -= 70 + Math.floor(rng() * 60);
     }
-
-    platforms.push({ x: WORLD_WIDTH / 2 - 60, y: GOAL_Y, w: 120, h: 16, type: 'goal' });
 }
 
 function generateIceCaveLevel() {
@@ -306,9 +374,9 @@ function generateEnemies() {
     for (const p of platforms) {
         if (p.type === 'wall' || p.type === 'goal') continue;
         if (p.w >= WORLD_WIDTH || p.h > 30) continue;
-        if (currentStage === 'darkforest') {
-            // Skip platforms near spawn (left) and goal (right)
-            if (p.x < 150 || p.x > WORLD_WIDTH - 250) continue;
+        if (currentStage === 'darkforest' || currentStage === 'steampunk') {
+            // Skip platforms near spawn (left) and goal (right) for horizontal stages
+            if (p.x < 150 || p.x > WORLD_WIDTH - 300) continue;
         } else {
             if (p.y < GOAL_Y + 100) continue;
         }

@@ -39,8 +39,8 @@ const player = {
     animTimer: 0,
 
     reset() {
-        if (currentStage === 'darkforest') {
-            this.x = 80; this.y = WORLD_HEIGHT - 100;
+        if (currentStage === 'darkforest' || currentStage === 'steampunk') {
+            this.x = 60; this.y = WORLD_HEIGHT - 100;
         } else {
             this.x = 380; this.y = WORLD_HEIGHT - 100;
         }
