@@ -67,6 +67,9 @@ function startGame() {
     if (currentStage === 'icecave') {
         generateCaveRocks();
         generateSnowflakes();
+    } else if (currentStage === 'darkforest') {
+        generateForestTrees();
+        generateFireflies();
     } else {
         generateBgGears();
     }
@@ -90,6 +93,7 @@ document.getElementById('restart-win-btn').addEventListener('click', startGame);
 document.getElementById('restart-death-btn').addEventListener('click', startGame);
 document.getElementById('stage-steampunk').addEventListener('click', () => selectStage('steampunk'));
 document.getElementById('stage-icecave').addEventListener('click', () => selectStage('icecave'));
+document.getElementById('stage-darkforest').addEventListener('click', () => selectStage('darkforest'));
 
 // ---- STARTUP ----
 generateBgGears();

@@ -7,6 +7,8 @@ let platforms = [];
 function generateLevel() {
     if (currentStage === 'icecave') {
         generateIceCaveLevel();
+    } else if (currentStage === 'darkforest') {
+        generateDarkForestLevel();
     } else {
         generateSteampunkLevel();
     }
@@ -119,6 +121,99 @@ function generateIceCaveLevel() {
                 w: 3 + Math.floor(rngWIce() * 4),
             });
         }
+    }
+}
+
+function generateDarkForestLevel() {
+    platforms = [];
+    icicles = [];
+
+    // Floor
+    platforms.push({ x: 0, y: WORLD_HEIGHT - 40, w: WORLD_WIDTH, h: 40, type: 'solid' });
+
+    // Forest walls - tree trunk walls with variable thickness
+    const rngWall = seedRandom(71);
+    for (let y = 0; y < WORLD_HEIGHT; y += 100) {
+        const leftW = 30 + Math.floor(rngWall() * 45);
+        const rightW = 30 + Math.floor(rngWall() * 45);
+        platforms.push({ x: -40, y: y, w: leftW + 40, h: 100, type: 'wall' });
+        platforms.push({ x: WORLD_WIDTH - rightW, y: y, w: rightW + 40, h: 100, type: 'wall' });
+    }
+
+    // Main platforms - mossy bricks and vine platforms like in the image
+    let py = WORLD_HEIGHT - 160;
+    const rng = seedRandom(51);
+
+    while (py > GOAL_Y - 100) {
+        const pw = 75 + Math.floor(rng() * 120);
+        const px = 50 + Math.floor(rng() * (WORLD_WIDTH - pw - 100));
+        const typeRoll = rng();
+        const type = typeRoll > 0.75 ? 'vineplat' : 'mossybrick';
+        platforms.push({ x: px, y: py, w: pw, h: 16, type });
+
+        // Side platforms (more frequent for interconnected look like the image)
+        if (rng() > 0.35) {
+            const sx = px + (rng() > 0.5 ? -70 - rng() * 35 : pw + 25 + rng() * 35);
+            if (sx > 30 && sx < WORLD_WIDTH - 70) {
+                const sw = 45 + Math.floor(rng() * 40);
+                platforms.push({ x: sx, y: py - 30 - rng() * 35, w: sw, h: 14, type: 'mossybrick' });
+            }
+        }
+
+        // Extra connecting platforms for the multi-path layout shown in the image
+        if (rng() > 0.6) {
+            const cx = 40 + Math.floor(rng() * (WORLD_WIDTH - 140));
+            platforms.push({ x: cx, y: py - 15 - rng() * 25, w: 40 + Math.floor(rng() * 50), h: 12, type: 'vineplat' });
+        }
+
+        py -= 60 + Math.floor(rng() * 55);
+    }
+
+    // Goal platform (castle)
+    platforms.push({ x: WORLD_WIDTH / 2 - 60, y: GOAL_Y, w: 120, h: 16, type: 'goal' });
+}
+
+let forestTrees = [];
+
+function generateForestTrees() {
+    forestTrees = [];
+    const rng = seedRandom(73);
+    for (let i = 0; i < 45; i++) {
+        forestTrees.push({
+            x: rng() * WORLD_WIDTH,
+            y: rng() * WORLD_HEIGHT,
+            w: 20 + rng() * 40,
+            h: 40 + rng() * 80,
+            shade: rng(),
+        });
+    }
+}
+
+let fireflies = [];
+
+function generateFireflies() {
+    fireflies = [];
+    for (let i = 0; i < 60; i++) {
+        fireflies.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            speed: 0.2 + Math.random() * 0.6,
+            size: 1 + Math.random() * 2,
+            drift: (Math.random() - 0.5) * 0.5,
+            phase: Math.random() * Math.PI * 2,
+        });
+    }
+}
+
+function updateFireflies() {
+    for (const f of fireflies) {
+        f.phase += 0.02 + Math.random() * 0.01;
+        f.x += f.drift + Math.sin(f.phase * 0.7) * 0.4;
+        f.y += Math.cos(f.phase) * 0.3;
+        if (f.x > canvas.width + 5) f.x = -5;
+        if (f.x < -5) f.x = canvas.width + 5;
+        if (f.y > canvas.height + 5) f.y = -5;
+        if (f.y < -5) f.y = canvas.height + 5;
     }
 }
 

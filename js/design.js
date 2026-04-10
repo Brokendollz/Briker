@@ -48,9 +48,44 @@ const ICE_COLORS = {
     dark: '#06061a',
 };
 
+// ---- COLORS (Dark Forest Palette) ----
+const FOREST_COLORS = {
+    bg1: '#0a1208',
+    bg2: '#0f1e0d',
+    bg3: '#152814',
+    treeTrunk: '#2a1a0a',
+    treeTrunkLight: '#3d2a14',
+    treeBark: '#1e1208',
+    leaves: '#1a3a12',
+    leavesBright: '#2a5a1e',
+    leavesDark: '#0e2408',
+    moss: '#3a6a28',
+    mossBright: '#4e8a36',
+    mossDark: '#284a1a',
+    brick: '#3a4a2a',
+    brickDark: '#2a3a1e',
+    brickLight: '#4a5a38',
+    vine: '#2a5a20',
+    vineBright: '#3a7a2e',
+    grass: '#4a8a30',
+    grassBright: '#5aaa40',
+    mist: '#8ab878',
+    mushroom: '#cc4433',
+    mushroomCap: '#dd5544',
+    firefly: '#eeff44',
+    fireflyGlow: '#ccdd22',
+    castle: '#5a5a5a',
+    castleLight: '#7a7a7a',
+    castleDark: '#3a3a3a',
+    castleRoof: '#cc4422',
+    dark: '#060a04',
+};
+
 // Get active color palette
 function getColors() {
-    return currentStage === 'icecave' ? ICE_COLORS : COLORS;
+    if (currentStage === 'icecave') return ICE_COLORS;
+    if (currentStage === 'darkforest') return FOREST_COLORS;
+    return COLORS;
 }
 
 // ---- PLAYER RENDERING (Rick Dangerous profile explorer with animation states) ----
@@ -395,6 +430,51 @@ function drawIceCaveEnemy(e, sx, sy) {
     }
 }
 
+function drawForestEnemy(e, sx, sy) {
+    const C = FOREST_COLORS;
+    if (e.type === 'walker') {
+        // Mushroom creature
+        ctx.fillStyle = C.mushroomCap;
+        ctx.fillRect(sx + 1, sy, 18, 8);
+        ctx.fillStyle = C.mushroom;
+        ctx.fillRect(sx + 3, sy + 2, 14, 6);
+        // Spots on cap
+        ctx.fillStyle = '#ffddaa';
+        ctx.fillRect(sx + 5, sy + 2, 3, 2);
+        ctx.fillRect(sx + 12, sy + 3, 2, 2);
+        // Stem/body
+        ctx.fillStyle = '#e8d8b8';
+        ctx.fillRect(sx + 5, sy + 8, 10, 8);
+        // Eyes
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fillRect(sx + (e.vx > 0 ? 11 : 7), sy + 10, 2, 2);
+        // Legs
+        ctx.fillStyle = C.mossDark;
+        const lo = e.animFrame === 0 ? 2 : -2;
+        ctx.fillRect(sx + 5, sy + 16, 3, 4 + lo);
+        ctx.fillRect(sx + 12, sy + 16, 3, 4 - lo);
+    } else {
+        // Forest sprite/wisp
+        ctx.fillStyle = C.leavesBright;
+        ctx.fillRect(sx + 3, sy + 3, 12, 12);
+        ctx.fillStyle = C.mossBright;
+        ctx.fillRect(sx + 5, sy + 1, 8, 4);
+        // Glowing eyes
+        ctx.fillStyle = C.firefly;
+        ctx.fillRect(sx + 6, sy + 7, 2, 2);
+        ctx.fillRect(sx + 10, sy + 7, 2, 2);
+        // Wings
+        ctx.fillStyle = C.vine;
+        const pw = e.animFrame === 0 ? 16 : 6;
+        ctx.fillRect(sx + 9 - pw / 2, sy, pw, 2);
+        // Glow
+        if (e.animFrame === 0) {
+            ctx.fillStyle = 'rgba(200, 255, 100, 0.15)';
+            ctx.fillRect(sx, sy - 2, 18, 20);
+        }
+    }
+}
+
 function drawEnemiesOnScreen() {
     for (const e of enemies) {
         if (!e.alive) continue;
@@ -402,6 +482,7 @@ function drawEnemiesOnScreen() {
         const sy = e.y - camera.y;
         if (sy < -40 || sy > canvas.height + 40) continue;
         if (currentStage === 'icecave') drawIceCaveEnemy(e, sx, sy);
+        else if (currentStage === 'darkforest') drawForestEnemy(e, sx, sy);
         else drawSteampunkEnemy(e, sx, sy);
     }
 }
@@ -470,8 +551,62 @@ function drawIceCaveBackground() {
     }
 }
 
+function drawDarkForestBackground() {
+    const C = FOREST_COLORS;
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    grad.addColorStop(0, C.bg3);
+    grad.addColorStop(0.5, C.bg2);
+    grad.addColorStop(1, C.bg1);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Background trees (parallax)
+    for (const t of forestTrees) {
+        const tx = t.x - camera.x * 0.15;
+        const ty = t.y - camera.y * 0.2;
+        if (ty > canvas.height + 80 || ty + t.h < -80) continue;
+
+        // Trunk
+        ctx.fillStyle = t.shade > 0.5 ? C.treeTrunk : C.treeBark;
+        ctx.fillRect(tx + t.w * 0.35, ty + t.h * 0.3, t.w * 0.3, t.h * 0.7);
+
+        // Canopy layers
+        ctx.fillStyle = C.leavesDark;
+        ctx.fillRect(tx - t.w * 0.1, ty, t.w * 1.2, t.h * 0.45);
+        ctx.fillStyle = C.leaves;
+        ctx.fillRect(tx + t.w * 0.05, ty + t.h * 0.05, t.w * 0.9, t.h * 0.35);
+        ctx.fillStyle = C.leavesBright;
+        ctx.fillRect(tx + t.w * 0.2, ty + t.h * 0.1, t.w * 0.5, t.h * 0.15);
+
+        // Branch details
+        if (t.shade > 0.3) {
+            ctx.fillStyle = C.treeTrunkLight;
+            ctx.fillRect(tx + t.w * 0.1, ty + t.h * 0.35, t.w * 0.25, 3);
+            ctx.fillRect(tx + t.w * 0.65, ty + t.h * 0.4, t.w * 0.25, 3);
+        }
+    }
+
+    // Mist layers
+    ctx.fillStyle = 'rgba(100, 160, 90, 0.04)';
+    for (let i = 0; i < 5; i++) {
+        const mx = i * 180 - ((camera.x * 0.03) % 180);
+        const my = canvas.height * 0.6 + Math.sin(Date.now() * 0.0005 + i) * 15;
+        ctx.fillRect(mx - 30, my, 200, 30);
+    }
+
+    // Distant vines
+    ctx.fillStyle = 'rgba(40, 90, 30, 0.08)';
+    for (let i = 0; i < 10; i++) {
+        const vx = 60 + i * 85 - ((camera.x * 0.06) % 85);
+        const vy = -camera.y * 0.08;
+        ctx.fillRect(vx, vy, 2, canvas.height * 0.4);
+        ctx.fillRect(vx - 3, vy + 30 + i * 15, 8, 3);
+    }
+}
+
 function drawBackgroundScene() {
     if (currentStage === 'icecave') drawIceCaveBackground();
+    else if (currentStage === 'darkforest') drawDarkForestBackground();
     else drawSteampunkBackground();
 }
 
@@ -504,22 +639,30 @@ function drawPlatformScene() {
 
         if (p.type === 'wall') {
             if (currentStage === 'icecave') drawIceCaveWall(p, sx, sy);
+            else if (currentStage === 'darkforest') drawForestWall(p, sx, sy);
             else drawSteampunkWall(p, sx, sy);
         } else if (p.type === 'goal') {
-            drawGoalPlatform(p, sx, sy);
+            if (currentStage === 'darkforest') drawForestGoalPlatform(p, sx, sy);
+            else drawGoalPlatform(p, sx, sy);
         } else if (p.type === 'pipe') {
             drawPipePlatform(p, sx, sy);
         } else if (p.type === 'icebridge') {
             drawIceBridge(p, sx, sy);
         } else if (p.type === 'rock') {
             drawRockPlatform(p, sx, sy);
+        } else if (p.type === 'mossybrick') {
+            drawMossyBrickPlatform(p, sx, sy);
+        } else if (p.type === 'vineplat') {
+            drawVinePlatform(p, sx, sy);
         } else {
             if (currentStage === 'icecave') drawIceSolidPlatform(p, sx, sy);
+            else if (currentStage === 'darkforest') drawForestSolidPlatform(p, sx, sy);
             else drawSteampunkSolid(p, sx, sy);
         }
     }
 
     if (currentStage === 'icecave') drawIcicles();
+    if (currentStage === 'darkforest') drawForestDecorations();
 }
 
 function drawSteampunkWall(p, sx, sy) {
@@ -651,6 +794,207 @@ function drawIceSolidPlatform(p, sx, sy) {
     for (let rx = 6; rx < p.w - 4; rx += 18) {
         ctx.fillRect(sx + rx, sy + 6, 6, 4);
     }
+}
+
+// ---- FOREST PLATFORM RENDERING ----
+function drawForestWall(p, sx, sy) {
+    const C = FOREST_COLORS;
+    const isLeft = p.x < 0;
+    ctx.fillStyle = C.treeBark;
+    ctx.fillRect(sx, sy, p.w, p.h);
+
+    // Bark texture
+    for (let ry = 0; ry < p.h; ry += 14) {
+        const bumpW = 6 + ((ry * 7 + 3) % 14);
+        const bumpH = 8 + ((ry * 3 + 5) % 10);
+        const bx = isLeft ? sx + p.w - bumpW - 2 + ((ry * 3) % 5) : sx + 2 - ((ry * 3) % 5);
+        ctx.fillStyle = C.treeTrunk;
+        ctx.fillRect(bx, sy + ry, bumpW, bumpH);
+    }
+
+    // Moss on wall edges
+    ctx.fillStyle = C.moss;
+    const edgeX = isLeft ? sx + p.w - 4 : sx;
+    ctx.fillRect(edgeX, sy, 4, p.h);
+
+    // Vine details
+    ctx.fillStyle = C.vine;
+    for (let ry = 0; ry < p.h; ry += 30) {
+        const vw = 3 + ((ry * 5 + 2) % 6);
+        const vrx = isLeft ? p.w - vw - 5 : 5;
+        ctx.fillRect(sx + vrx, sy + ry, vw, 12);
+    }
+}
+
+function drawForestGoalPlatform(p, sx, sy) {
+    const C = FOREST_COLORS;
+    // Castle base platform
+    ctx.fillStyle = C.castleDark;
+    ctx.fillRect(sx, sy, p.w, p.h);
+    ctx.fillStyle = C.castle;
+    ctx.fillRect(sx, sy, p.w, 4);
+
+    // Castle structure above
+    const cw = 80;
+    const cx = sx + p.w / 2 - cw / 2;
+    // Main building
+    ctx.fillStyle = C.castleDark;
+    ctx.fillRect(cx + 10, sy - 50, cw - 20, 50);
+    ctx.fillStyle = C.castle;
+    ctx.fillRect(cx + 12, sy - 48, cw - 24, 46);
+    // Windows
+    ctx.fillStyle = '#eedd44';
+    ctx.fillRect(cx + 22, sy - 38, 6, 8);
+    ctx.fillRect(cx + cw - 30, sy - 38, 6, 8);
+    // Door
+    ctx.fillStyle = C.treeTrunk;
+    ctx.fillRect(cx + cw / 2 - 6, sy - 18, 12, 18);
+    // Towers
+    ctx.fillStyle = C.castleLight;
+    ctx.fillRect(cx, sy - 65, 16, 65);
+    ctx.fillRect(cx + cw - 16, sy - 65, 16, 65);
+    // Tower roofs (red triangular caps)
+    ctx.fillStyle = C.castleRoof;
+    ctx.fillRect(cx - 2, sy - 80, 20, 5);
+    ctx.fillRect(cx + 2, sy - 85, 12, 5);
+    ctx.fillRect(cx + 5, sy - 89, 6, 4);
+    ctx.fillRect(cx + cw - 18, sy - 80, 20, 5);
+    ctx.fillRect(cx + cw - 14, sy - 85, 12, 5);
+    ctx.fillRect(cx + cw - 11, sy - 89, 6, 4);
+    // Battlements
+    for (let bx = cx + 12; bx < cx + cw - 16; bx += 10) {
+        ctx.fillStyle = C.castle;
+        ctx.fillRect(bx, sy - 56, 6, 6);
+    }
+    // Goal glow
+    const bobY = Math.sin(Date.now() * 0.005) * 4;
+    ctx.fillStyle = 'rgba(238, 255, 68, 0.15)';
+    ctx.fillRect(sx - 10, sy - 95, p.w + 20, 95);
+    ctx.fillStyle = C.firefly;
+    ctx.fillRect(cx + cw / 2 - 4, sy - 95 + bobY, 8, 8);
+    ctx.fillRect(cx + cw / 2 - 2, sy - 100 + bobY, 4, 5);
+}
+
+function drawMossyBrickPlatform(p, sx, sy) {
+    const C = FOREST_COLORS;
+    // Brick base
+    ctx.fillStyle = C.brickDark;
+    ctx.fillRect(sx, sy, p.w, p.h);
+    // Brick pattern
+    ctx.fillStyle = C.brick;
+    for (let rx = 0; rx < p.w; rx += 12) {
+        const row = Math.floor(rx / 12);
+        const brickOffset = row % 2 === 0 ? 0 : 6;
+        ctx.fillRect(sx + rx + 1, sy + 2, 10, 5);
+        if (sy + 9 < sy + p.h) {
+            ctx.fillRect(sx + rx + brickOffset + 1, sy + 9, 10, 5);
+        }
+    }
+    // Brick highlights
+    ctx.fillStyle = C.brickLight;
+    for (let rx = 4; rx < p.w - 4; rx += 24) {
+        ctx.fillRect(sx + rx, sy + 3, 6, 3);
+    }
+    // Grass/moss on top
+    ctx.fillStyle = C.grass;
+    ctx.fillRect(sx - 2, sy - 3, p.w + 4, 5);
+    ctx.fillStyle = C.grassBright;
+    ctx.fillRect(sx, sy - 3, p.w, 3);
+    // Grass tufts
+    for (let gx = 3; gx < p.w - 3; gx += 8) {
+        const gh = 2 + ((gx * 7 + 3) % 4);
+        ctx.fillRect(sx + gx, sy - 3 - gh, 2, gh);
+    }
+    // Moss drips below
+    ctx.fillStyle = C.mossDark;
+    for (let mx = 6; mx < p.w - 4; mx += 14) {
+        const mh = 3 + ((mx * 3 + 5) % 5);
+        ctx.fillRect(sx + mx, sy + p.h, 3, mh);
+    }
+}
+
+function drawVinePlatform(p, sx, sy) {
+    const C = FOREST_COLORS;
+    // Main vine rope
+    ctx.fillStyle = C.vine;
+    ctx.fillRect(sx, sy, p.w, p.h);
+    ctx.fillStyle = C.vineBright;
+    ctx.fillRect(sx, sy, p.w, 3);
+    // Leaves on vine
+    ctx.fillStyle = C.leavesBright;
+    for (let lx = 8; lx < p.w - 8; lx += 16) {
+        ctx.fillRect(sx + lx, sy - 4, 6, 4);
+        ctx.fillRect(sx + lx + 1, sy - 6, 4, 2);
+    }
+    // Anchor points
+    ctx.fillStyle = C.mossDark;
+    ctx.fillRect(sx - 2, sy - 1, 6, p.h + 2);
+    ctx.fillRect(sx + p.w - 4, sy - 1, 6, p.h + 2);
+    // Hanging vine tendrils
+    ctx.fillStyle = C.vine;
+    for (let vx = 10; vx < p.w - 8; vx += 20) {
+        const vh = 8 + ((vx * 5 + 3) % 12);
+        ctx.fillRect(sx + vx, sy + p.h, 2, vh);
+    }
+}
+
+function drawForestSolidPlatform(p, sx, sy) {
+    const C = FOREST_COLORS;
+    ctx.fillStyle = C.brickDark;
+    ctx.fillRect(sx, sy, p.w, p.h);
+    ctx.fillStyle = C.brick;
+    ctx.fillRect(sx + 2, sy + 2, p.w - 4, p.h - 4);
+    // Grass on top
+    ctx.fillStyle = C.grass;
+    ctx.fillRect(sx - 1, sy - 2, p.w + 2, 4);
+    ctx.fillStyle = C.grassBright;
+    ctx.fillRect(sx, sy - 2, p.w, 2);
+}
+
+function drawForestDecorations() {
+    const C = FOREST_COLORS;
+    // Draw small bushes/mushrooms near platforms
+    for (const p of platforms) {
+        if (p.type === 'wall' || p.type === 'goal' || p.w >= WORLD_WIDTH) continue;
+        const sx = p.x - camera.x;
+        const sy = p.y - camera.y;
+        if (sy > canvas.height + 20 || sy < -40 || sx > canvas.width + 40 || sx + p.w < -40) continue;
+
+        // Small bushes on some platforms
+        const hash = (p.x * 31 + p.y * 17) % 100;
+        if (hash < 30) {
+            const bx = sx + (hash % (Math.max(1, p.w - 12)));
+            ctx.fillStyle = C.leavesDark;
+            ctx.fillRect(bx, sy - 8, 10, 6);
+            ctx.fillStyle = C.leavesBright;
+            ctx.fillRect(bx + 1, sy - 10, 8, 4);
+        }
+        if (hash > 70 && hash < 85) {
+            // Small mushroom decoration
+            const mx = sx + ((hash * 3) % (Math.max(1, p.w - 8)));
+            ctx.fillStyle = '#e8d8c0';
+            ctx.fillRect(mx + 2, sy - 5, 3, 5);
+            ctx.fillStyle = C.mushroom;
+            ctx.fillRect(mx, sy - 8, 7, 4);
+            ctx.fillStyle = '#ffccaa';
+            ctx.fillRect(mx + 2, sy - 7, 2, 2);
+        }
+    }
+}
+
+// ---- FIREFLY RENDERING ----
+function drawFireflyScene() {
+    const C = FOREST_COLORS;
+    for (const f of fireflies) {
+        const glow = 0.3 + Math.sin(f.phase) * 0.3;
+        ctx.globalAlpha = glow;
+        ctx.fillStyle = C.fireflyGlow;
+        ctx.fillRect(f.x - 2, f.y - 2, f.size + 4, f.size + 4);
+        ctx.fillStyle = C.firefly;
+        ctx.globalAlpha = glow + 0.3;
+        ctx.fillRect(f.x, f.y, f.size, f.size);
+    }
+    ctx.globalAlpha = 1;
 }
 
 // ---- PARTICLE RENDERING ----
