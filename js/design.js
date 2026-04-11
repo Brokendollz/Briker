@@ -475,6 +475,44 @@ function drawForestEnemy(e, sx, sy) {
     }
 }
 
+function drawCyberEnemy(e, sx, sy) {
+    // Cyber vault enemies - neon glowing style
+    if (e.type === 'walker') {
+        // Cyber walker - glowing neon design
+        ctx.fillStyle = '#00ff88';
+        ctx.fillRect(sx + 2, sy + 4, 16, 12);  // Body
+        ctx.fillStyle = '#00ddff';
+        ctx.fillRect(sx + 4, sy, 12, 8);       // Head
+        // Glowing eye
+        ctx.fillStyle = '#ff00ff';
+        ctx.fillRect(sx + (e.vx > 0 ? 12 : 6), sy + 2, 3, 3);
+        // Neon glow
+        ctx.fillStyle = 'rgba(0, 255, 136, 0.3)';
+        ctx.fillRect(sx, sy - 2, 20, 20);
+        // Legs with animation
+        ctx.fillStyle = '#00ff88';
+        const lo = e.animFrame === 0 ? 2 : -2;
+        ctx.fillRect(sx + 3, sy + 16, 4, 4 + lo);
+        ctx.fillRect(sx + 13, sy + 16, 4, 4 - lo);
+    } else {
+        // Cyber drone - floating data orb
+        ctx.fillStyle = '#ff0088';
+        ctx.fillRect(sx + 3, sy + 4, 12, 10);  // Core
+        ctx.fillStyle = '#00ffff';
+        ctx.fillRect(sx + 5, sy, 8, 6);        // Scanner
+        // Glowing center eye
+        ctx.fillStyle = '#ffff00';
+        ctx.fillRect(sx + 7, sy + 6, 4, 3);
+        // Neon glow around drone
+        ctx.fillStyle = 'rgba(255, 0, 136, 0.2)';
+        ctx.fillRect(sx - 3, sy - 3, 18, 18);
+        // Pulsing light
+        ctx.fillStyle = '#00ffff';
+        const pw = e.animFrame === 0 ? 16 : 4;
+        ctx.fillRect(sx + 9 - pw / 2, sy - 2, pw, 2);
+    }
+}
+
 function drawEnemiesOnScreen() {
     for (const e of enemies) {
         if (!e.alive) continue;
@@ -483,6 +521,7 @@ function drawEnemiesOnScreen() {
         if (sy < -40 || sy > canvas.height + 40) continue;
         if (currentStage === 'icecave') drawIceCaveEnemy(e, sx, sy);
         else if (currentStage === 'darkforest') drawForestEnemy(e, sx, sy);
+        else if (currentStage === 'cybervault') drawCyberEnemy(e, sx, sy);
         else drawSteampunkEnemy(e, sx, sy);
     }
 }
@@ -604,9 +643,76 @@ function drawDarkForestBackground() {
     }
 }
 
+function drawCyberVaultBackground() {
+    // Cyber vault - retro pixel art style background
+    // Deep purple/dark blue gradient like a digital vault
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    grad.addColorStop(0, '#1a0033');  // Deep purple
+    grad.addColorStop(0.5, '#330066'); // Purple
+    grad.addColorStop(1, '#000011');  // Dark blue
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Scanlines effect (retro pixel art look)
+    ctx.strokeStyle = 'rgba(100, 255, 200, 0.03)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < canvas.height; i += 2) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
+        ctx.stroke();
+    }
+
+    // Grid pattern in background
+    ctx.strokeStyle = 'rgba(0, 255, 150, 0.04)';
+    ctx.lineWidth = 1;
+    const gridSize = 60;
+    for (let x = -camera.x % gridSize; x < canvas.width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+    for (let y = -camera.y % gridSize; y < canvas.height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+
+    // Floating particles/data orbs
+    const rng = seedRandom(92 + Math.floor(Date.now() / 5000));
+    for (let i = 0; i < 15; i++) {
+        const px = (i * 280 - camera.x * 0.2) % canvas.width;
+        const py = (i * 150 - camera.y * 0.15) % canvas.height;
+        const size = 2 + Math.sin(Date.now() * 0.003 + i) * 1.5;
+
+        ctx.fillStyle = 'rgba(0, 255, 200, 0.5)';
+        ctx.beginPath();
+        ctx.arc(px + 50, py + 50, size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Glow
+        ctx.fillStyle = 'rgba(0, 255, 200, 0.1)';
+        ctx.beginPath();
+        ctx.arc(px + 50, py + 50, size + 3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Neon glow strips
+    ctx.fillStyle = 'rgba(0, 255, 100, 0.08)';
+    for (let i = 0; i < 3; i++) {
+        const gx = -camera.x * 0.1 + i * 400;
+        ctx.fillRect(gx, canvas.height * 0.3, 100, 40);
+        ctx.fillRect(gx, canvas.height * 0.7, 120, 30);
+    }
+}
+
 function drawBackgroundScene() {
     if (currentStage === 'icecave') drawIceCaveBackground();
     else if (currentStage === 'darkforest') drawDarkForestBackground();
+    else if (currentStage === 'cybervault') drawCyberVaultBackground();
     else drawSteampunkBackground();
 }
 

@@ -9,6 +9,8 @@ function generateLevel() {
         generateIceCaveLevel();
     } else if (currentStage === 'darkforest') {
         generateDarkForestLevel();
+    } else if (currentStage === 'cybervault') {
+        generateCyberVaultLevel();
     } else {
         generateSteampunkLevel();
     }
@@ -362,6 +364,119 @@ function generateDarkForestLevel() {
         if (ex < 4400 || ey > GROUND_Y - 350) {
             platforms.push({ x: ex, y: ey, w: ew, h: 14, type });
         }
+    }
+}
+
+function generateCyberVaultLevel() {
+    // ============================================================
+    // Cyber Vault level - Retro pixel art style with rings and spikes
+    // Horizontal level with collectible rings, spikes, lava pits
+    // ============================================================
+    WORLD_WIDTH = 4200;
+    WORLD_HEIGHT = 700;
+    GOAL_Y = 0;
+
+    platforms = [];
+    icicles = [];
+
+    const GROUND_Y = WORLD_HEIGHT - 40;
+
+    // Ground floor
+    platforms.push({ x: 0, y: GROUND_Y, w: WORLD_WIDTH, h: 40, type: 'solid' });
+
+    // Side walls
+    platforms.push({ x: -40, y: 0, w: 50, h: WORLD_HEIGHT, type: 'wall' });
+    platforms.push({ x: WORLD_WIDTH - 10, y: 0, w: 50, h: WORLD_HEIGHT, type: 'wall' });
+
+    const rng = seedRandom(88);
+
+    // === ZONE 1: Safe start area (x: 0-500) ===
+    // Intro platforms with spikes
+    platforms.push({ x: 100, y: GROUND_Y - 60, w: 120, h: 14, type: 'solid' });
+    platforms.push({ x: 280, y: GROUND_Y - 80, w: 100, h: 14, type: 'pipe' });
+
+    // Spike decoration (icicles used as spikes)
+    for (let sx = 100; sx < 220; sx += 30) {
+        icicles.push({ x: sx, y: GROUND_Y + 10, h: 20, w: 4 });
+    }
+
+    // === ZONE 2: Multi-level platform section (x: 500-1400) ===
+    // Three layers with increasing difficulty
+    // Layer 1 (ground level)
+    platforms.push({ x: 500, y: GROUND_Y - 70, w: 140, h: 14, type: 'solid' });
+    platforms.push({ x: 720, y: GROUND_Y - 75, w: 130, h: 14, type: 'oneWay' });
+    platforms.push({ x: 920, y: GROUND_Y - 65, w: 120, h: 14, type: 'pipe' });
+    platforms.push({ x: 1120, y: GROUND_Y - 80, w: 150, h: 14, type: 'solid' });
+
+    // Layer 2 (mid level)
+    platforms.push({ x: 580, y: GROUND_Y - 150, w: 110, h: 14, type: 'pipe' });
+    platforms.push({ x: 780, y: GROUND_Y - 160, w: 100, h: 14, type: 'solid' });
+    platforms.push({ x: 1000, y: GROUND_Y - 155, w: 140, h: 14, type: 'oneWay' });
+    platforms.push({ x: 1200, y: GROUND_Y - 165, w: 120, h: 14, type: 'solid' });
+
+    // Layer 3 (high level)
+    platforms.push({ x: 650, y: GROUND_Y - 230, w: 130, h: 14, type: 'solid' });
+    platforms.push({ x: 850, y: GROUND_Y - 240, w: 120, h: 14, type: 'pipe' });
+    platforms.push({ x: 1050, y: GROUND_Y - 235, w: 110, h: 14, type: 'oneWay' });
+
+    // Spikes throughout zone 2
+    for (let sx = 500; sx < 1300; sx += 100) {
+        for (let i = 0; i < 3; i++) {
+            icicles.push({ x: sx + i * 30, y: GROUND_Y + 10, h: 15, w: 3 });
+        }
+    }
+
+    // === ZONE 3: Lava pit challenge (x: 1400-2200) ===
+    // Lava pit hazard
+    platforms.push({ x: 1400, y: GROUND_Y - 10, w: 250, h: 14, type: 'lava' });
+
+    // Jumping platforms over lava
+    platforms.push({ x: 1420, y: GROUND_Y - 80, w: 80, h: 14, type: 'solid' });
+    platforms.push({ x: 1550, y: GROUND_Y - 100, w: 70, h: 14, type: 'oneWay' });
+    platforms.push({ x: 1680, y: GROUND_Y - 85, w: 90, h: 14, type: 'solid' });
+
+    // Upper path
+    platforms.push({ x: 1480, y: GROUND_Y - 170, w: 140, h: 14, type: 'pipe' });
+    platforms.push({ x: 1700, y: GROUND_Y - 160, w: 130, h: 14, type: 'solid' });
+
+    // Lava spikes
+    for (let sx = 1400; sx < 1650; sx += 40) {
+        icicles.push({ x: sx, y: GROUND_Y, h: 25, w: 5 });
+    }
+
+    // === ZONE 4: Ring collection challenge (x: 2200-3200) ===
+    // Platforms with ring (collectible) pattern
+    platforms.push({ x: 2200, y: GROUND_Y - 70, w: 140, h: 14, type: 'solid' });
+    platforms.push({ x: 2420, y: GROUND_Y - 85, w: 100, h: 14, type: 'oneWay' });
+    platforms.push({ x: 2600, y: GROUND_Y - 70, w: 120, h: 14, type: 'pipe' });
+    platforms.push({ x: 2800, y: GROUND_Y - 90, w: 140, h: 14, type: 'solid' });
+    platforms.push({ x: 3000, y: GROUND_Y - 75, w: 130, h: 14, type: 'oneWay' });
+
+    // Upper lane
+    platforms.push({ x: 2300, y: GROUND_Y - 160, w: 150, h: 14, type: 'solid' });
+    platforms.push({ x: 2550, y: GROUND_Y - 175, w: 100, h: 14, type: 'oneWay' });
+    platforms.push({ x: 2750, y: GROUND_Y - 160, w: 140, h: 14, type: 'pipe' });
+    platforms.push({ x: 3000, y: GROUND_Y - 180, w: 120, h: 14, type: 'solid' });
+
+    // Spikes in zone 4
+    for (let sx = 2200; sx < 3100; sx += 60) {
+        icicles.push({ x: sx, y: GROUND_Y + 10, h: 18, w: 3 });
+    }
+
+    // === ZONE 5: Final challenge tower (x: 3200-4000) ===
+    // Vertical tower of platforms to reach goal
+    platforms.push({ x: 3200, y: GROUND_Y - 80, w: 100, h: 14, type: 'pipe' });
+    platforms.push({ x: 3180, y: GROUND_Y - 160, w: 140, h: 14, type: 'solid' });
+    platforms.push({ x: 3160, y: GROUND_Y - 240, w: 160, h: 14, type: 'oneWay' });
+    platforms.push({ x: 3180, y: GROUND_Y - 320, w: 140, h: 14, type: 'pipe' });
+    platforms.push({ x: 3200, y: GROUND_Y - 400, w: 120, h: 14, type: 'solid' });
+
+    // Goal platform at top
+    platforms.push({ x: 3150, y: GROUND_Y - 480, w: 160, h: 16, type: 'goal' });
+
+    // Tower spikes
+    for (let i = 0; i < 10; i++) {
+        icicles.push({ x: 3100 + i * 20, y: GROUND_Y + 10, h: 20, w: 4 });
     }
 }
 
